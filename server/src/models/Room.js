@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 // Room schema
 
 const roomSchema = new mongoose.Schema({

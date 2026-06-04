@@ -8,7 +8,7 @@ const authMiddle = (req, res, next) => {
           }
 
           const decoded = jwt.verify(token, process.env.JWT_SECRET);
-          console.log(decoded);
+          
 
           req.user = {
                userId: decoded.userId

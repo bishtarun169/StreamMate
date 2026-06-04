@@ -1,11 +1,12 @@
 const User = require('../models/User');
 const Room = require('../models/Room');
+const bcrypt = require('bcryptjs');
 
 // Create a new room
 const createRoom = async (req, res) => {
      try {
           const { roomName, videoURL, privacy, password } = req.body;
-          const hostId = req.user;
+          const hostId = req.user.userId;
           // Valid Room name
           if (!roomName) {
                return res.status(400).json({ message: 'Room name are required' });
@@ -52,7 +53,7 @@ const createRoom = async (req, res) => {
 const joinRoom = async (req, res) => {
      try {
           const { roomCode, password } = req.body;
-          const userId = req.user;
+          const userId = req.user.userId;
 
           // Find room by code
           const room = await Room.findOne({ roomCode });
