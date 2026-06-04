@@ -2,8 +2,9 @@ const express = require('express');
 
 const router = express.Router();
 
-const { registerUser , loginUser, getCurrentUser, updateUser, deleteUser } = require('../controllers/authController');
+const { registerUser , loginUser, getCurrentUser, updateUser, deleteUser, verifyOTP, resendOTP } = require('../controllers/authController');
 const authMiddle = require('../middleware/authMiddleware');
+const sendOTPEmail = require('../utils/sendEmail');
 
 // @route   POST /api/auth/register
 // @desc    Register a new user
@@ -14,6 +15,16 @@ router.post('/register', registerUser);
 //@desc    Login user and return JWT token
 //@access  Public
 router.post('/login', loginUser);
+
+//@route   POST /api/auth/verify-otp
+//@desc    Verify user's OTP
+//@access  Public
+router.post('/verify-otp', verifyOTP);
+
+//@route   POST /api/auth/resend-otp
+//@desc    Resend OTP to user
+//@access  Public
+router.post('/resend-otp', resendOTP);
 
 //@route   GET /api/auth/me
 //@desc    Get current user info

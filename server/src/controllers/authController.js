@@ -1,6 +1,9 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
+const sendOTPEmail = require('../utils/sendEmail');
+require('dotenv').config();
 
 // User registration controller
 const registerUser = async (req, res) => {
@@ -13,26 +16,106 @@ const registerUser = async (req, res) => {
                return res.status(400).json({ message: 'Passwords do not match' });
           }
 
-          // Hash the password
-          const salt = await bcrypt.genSalt(10);
-          const hashedPassword = await bcrypt.hash(password, salt);
-
           // Check if user already exists
           let user = await User.findOne({ email });
           if (user) {
                return res.status(400).json({ message: 'User already exists' });
           }
 
+           // Hash the password
+          const salt = await bcrypt.genSalt(10);
+          const hashedPassword = await bcrypt.hash(password, salt);
+
+          // OTP generation
+          const otp = Math.floor(100000 + Math.random() * 900000).toString();
+          const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // OTP valid for 10 minutes
+
+          // Send OTP email
+          await sendOTPEmail(email, otp);
+          
           // Create new user
-          user = new User({ name, email, password: hashedPassword });
+          user = new User({ name, email, password: hashedPassword, otp, otpExpiry, isVerified: false });
           await user.save();
 
-          res.status(201).json({ message: 'User registered successfully' });
+          res.status(201).json({ 
+               message: 'User registered. Verify OTP to complete registration.',
+          });
      } catch (error) {
           console.error(error.message);
           res.status(500).json({ message: 'Server error' });
      }
 };
+
+// OTP verification controller
+const verifyOTP = async (req, res) => {
+     try {
+          const { email, otp } = req.body;
+
+          // Find user by email
+          const user = await User.findOne({ email });
+          if (!user) {
+               return res.status(400).json({ message: 'User not found' });
+          }
+
+          // Check if user is already verified
+          if (user.isVerified) {
+               return res.status(400).json({ message: 'User already verified' });
+          }
+
+          // Check if OTP is valid
+          if (user.otp !== otp) {
+               return res.status(400).json({ message: 'Invalid OTP' });
+          }
+
+          // Check if OTP has expired          
+          if (user.otpExpiry < new Date()) {
+               return res.status(400).json({ message: 'OTP has expired' });
+          }
+
+          // Mark user as verified and clear OTP fields
+          user.isVerified = true;
+          user.otp = undefined;
+          user.otpExpiry = undefined;
+          await user.save();
+
+          res.status(200).json({ message: 'OTP verified successfully. Registration complete.' });
+     } catch (error) {
+          console.error(error.message);
+          res.status(500).json({ message: 'Server error' });
+     }
+};
+
+// Resend  OTP controller
+const resendOTP = async (req, res) => {
+     try {
+          const { email } = req.body;
+
+          // Find user by email
+          const user = await User.findOne({ email });
+          if (!user) {
+               return res.status(400).json({ message: 'User not found' });
+          }
+
+          // Check if user is already verified
+          if (user.isVerified) {
+               return res.status(400).json({ message: 'User already verified' });
+          }
+
+          // Generate new OTP
+          const otp = Math.floor(100000 + Math.random() * 900000).toString();
+          const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // OTP valid for 10 minutes
+
+          // Update user with new OTP
+          user.otp = otp;
+          user.otpExpiry = otpExpiry;
+          await user.save();
+
+          res.status(200).json({ message: 'OTP resent successfully.'});
+     } catch (error) {
+          console.error(error.message);
+          res.status(500).json({ message: 'Server error' });
+     }
+};   
 
 // User login controller
 const loginUser = async (req, res) => {
@@ -43,6 +126,11 @@ const loginUser = async (req, res) => {
           const user = await User.findOne({ email });
           if (!user) {
                return res.status(400).json({ message: 'Invalid credentials' });
+          }
+
+          // Check if user is verified
+          if (!user.isVerified) {
+               return res.status(400).json({ message: 'Please verify your email before logging in' });
           }
 
           // Compare password
@@ -79,6 +167,7 @@ const getCurrentUser = async (req, res) => {
      }
 };
 
+module.exports = { registerUser, loginUser , getCurrentUser, verifyOTP, resendOTP };      
 // Update user details (name, profile picture, optional password)
 const updateUser = async (req, res) => {
      try {
@@ -117,4 +206,4 @@ const deleteUser = async (req, res) => {
      }
 };
 
-module.exports = { registerUser, loginUser , getCurrentUser, updateUser, deleteUser };
+module.exports = { registerUser, loginUser , getCurrentUser, updateUser, deleteUser , verifyOTP, resendOTP };
