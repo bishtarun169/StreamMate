@@ -1,7 +1,5 @@
 const User = require('../models/User');
 const Room = require('../models/Room');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 
 // Create a new room
 const createRoom = async (req, res) => {
@@ -50,3 +48,50 @@ const createRoom = async (req, res) => {
      }
 };
 
+// Join a room
+const joinRoom = async (req, res) => {
+     try {
+          const { roomCode, password } = req.body;
+          const userId = req.user;
+
+          // Find room by code
+          const room = await Room.findOne({ roomCode });
+          if (!room) {
+               return res.status(404).json({ message: 'Room not found' });
+          }
+
+          // Check if user is already a participant
+          if (room.participants.includes(userId)) {
+               return res.status(400).json({ message: 'You are already in this room' });
+          }
+
+          // If room is private, check password
+          if (room.privacy === 'private') {
+               if (!password) {
+                    return res.status(400).json({ message: 'Password is required to join this room' });
+               }
+               const isMatch = await bcrypt.compare(password, room.password);
+               if (!isMatch) {
+                    return res.status(400).json({ message: 'Incorrect password' });
+               }
+          }
+
+          // Add user to participants
+          room.participants.push(userId);
+          await room.save();
+
+          res.status(200).json({ 
+               message: 'Joined room successfully',
+               roomCode: room.roomCode,
+               roomName: room.roomName,
+               videoURL: room.videoURL,
+               host: room.host,
+          });
+
+     } catch (error) {
+          console.error(error.message);
+          res.status(500).json({ message: 'Server error' });
+     }
+};
+
+module.exports = {createRoom, joinRoom};
