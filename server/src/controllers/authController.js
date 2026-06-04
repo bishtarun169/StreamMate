@@ -1,6 +1,9 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
+const sendOTPEmail = require('../utils/sendEmail');
+require('dotenv').config();
 
 // User registration controller
 const registerUser = async (req, res) => {
@@ -26,6 +29,9 @@ const registerUser = async (req, res) => {
           // OTP generation
           const otp = Math.floor(100000 + Math.random() * 900000).toString();
           const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // OTP valid for 10 minutes
+
+          // Send OTP email
+          await sendOTPEmail(email, otp);
           
           // Create new user
           user = new User({ name, email, password: hashedPassword, otp, otpExpiry, isVerified: false });
@@ -33,7 +39,6 @@ const registerUser = async (req, res) => {
 
           res.status(201).json({ 
                message: 'User registered. Verify OTP to complete registration.',
-               otp, // In production, you would send this OTP via email instead of returning it in the response
           });
      } catch (error) {
           console.error(error.message);
@@ -105,7 +110,7 @@ const resendOTP = async (req, res) => {
           user.otpExpiry = otpExpiry;
           await user.save();
 
-          res.status(200).json({ message: 'OTP resent successfully.', otp });
+          res.status(200).json({ message: 'OTP resent successfully.'});
      } catch (error) {
           console.error(error.message);
           res.status(500).json({ message: 'Server error' });

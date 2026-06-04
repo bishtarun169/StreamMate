@@ -4,6 +4,7 @@ const router = express.Router();
 
 const { registerUser , loginUser, getCurrentUser , verifyOTP , resendOTP} = require('../controllers/authController');
 const authMiddle = require('../middleware/authMiddleware');
+const sendOTPEmail = require('../utils/sendEmail');
 
 // @route   POST /api/auth/register
 // @desc    Register a new user
