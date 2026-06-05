@@ -11,7 +11,8 @@ const {
      verifyOTP,
      resendOTP,
      forgotPassword,
-     resetPassword 
+     resetPassword,
+     requestPasswordOTP
 } = require('../controllers/authController');
 const authMiddle = require('../middleware/authMiddleware');
 
@@ -32,5 +33,6 @@ router.post('/reset-password', resetPassword);
 router.get('/me', authMiddle, getCurrentUser);
 router.put('/update', authMiddle, updateUser);
 router.delete('/delete', authMiddle, deleteUser);
+router.post('/request-password-otp', authMiddle, requestPasswordOTP);
 
 module.exports = router;
