@@ -22,6 +22,26 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
+
+  gender: {
+    type: String,
+    default: "",
+  },
+
+  bio: {
+    type: String,
+    default: "",
+  },
+
+  location: {
+    type: String,
+    default: "",
+  },
+
+  birthday: {
+    type: String,
+    default: "",
+  },
   
   settings: {
     theme: {
