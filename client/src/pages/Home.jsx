@@ -61,6 +61,14 @@ export default function Home() {
   const [editName, setEditName] = useState("");
   const [editProfilePic, setEditProfilePic] = useState("");
   const [editPassword, setEditPassword] = useState("");
+  const [editGender, setEditGender] = useState("");
+  const [editBio, setEditBio] = useState("");
+  const [editLocation, setEditLocation] = useState("");
+  const [editBirthday, setEditBirthday] = useState("");
+  const [editOtp, setEditOtp] = useState("");
+  const [isPasswordOtpSent, setIsPasswordOtpSent] = useState(false);
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [otpSuccessMessage, setOtpSuccessMessage] = useState("");
   const [editError, setEditError] = useState("");
   const [editSuccess, setEditSuccess] = useState("");
 
@@ -125,6 +133,10 @@ export default function Home() {
         setUser(data.user);
         setEditName(data.user.name);
         setEditProfilePic(data.user.profilePic || "");
+        setEditGender(data.user.gender || "");
+        setEditBio(data.user.bio || "");
+        setEditLocation(data.user.location || "");
+        setEditBirthday(data.user.birthday || "");
         if (data.user.settings) {
           setSettingsTheme(data.user.settings.theme || "dark");
           setSettingsAllowJoinRequests(data.user.settings.allowJoinRequests || "everyone");
@@ -166,6 +178,11 @@ export default function Home() {
     setEditError("");
     setEditSuccess("");
 
+    if (editPassword && !editOtp) {
+      setEditError("OTP code is required to change password");
+      return;
+    }
+
     const token = localStorage.getItem("token");
     if (!token) return;
 
@@ -180,6 +197,11 @@ export default function Home() {
           name: editName,
           profilePic: editProfilePic,
           password: editPassword || undefined,
+          gender: editGender,
+          bio: editBio,
+          location: editLocation,
+          birthday: editBirthday,
+          otp: editPassword ? editOtp : undefined,
         }),
       });
 
@@ -188,6 +210,9 @@ export default function Home() {
         setEditSuccess("Profile updated successfully!");
         setUser(data.user);
         setEditPassword(""); // Reset password field
+        setEditOtp(""); // Reset OTP field
+        setIsPasswordOtpSent(false); // Reset OTP status
+        setOtpSuccessMessage("");
         setTimeout(() => {
           setIsEditModalOpen(false);
           setEditSuccess("");
@@ -198,6 +223,37 @@ export default function Home() {
     } catch (err) {
       setEditError("Unable to connect to server");
       console.error(err);
+    }
+  };
+
+  const handleRequestPasswordOTP = async () => {
+    setEditError("");
+    setOtpSuccessMessage("");
+    setOtpLoading(true);
+
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/request-password-otp", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setIsPasswordOtpSent(true);
+        setOtpSuccessMessage("Verification code sent!");
+      } else {
+        setEditError(data.message || "Failed to send code");
+      }
+    } catch (err) {
+      setEditError("Unable to connect to server");
+      console.error(err);
+    } finally {
+      setOtpLoading(false);
     }
   };
 
@@ -726,7 +782,6 @@ export default function Home() {
                 )}
               </div>
 
-              {/* Profile Info Details */}
               <div className="flex-grow space-y-6 text-center sm:text-left">
                 <div className="space-y-2">
                   <h3 className="text-2xl font-bold">{user.name}</h3>
@@ -740,15 +795,33 @@ export default function Home() {
                   </div>
                 </div>
 
+                {user.bio && (
+                  <p className={`text-sm ${textMutedClass} italic leading-relaxed border-l-2 border-red-500 pl-4 py-1 mt-4 text-left`}>
+                    "{user.bio}"
+                  </p>
+                )}
+
                 {/* Form fields displays */}
-                <div className={`grid grid-cols-1 sm:grid-cols-2 gap-4 border-t ${isLight ? 'border-zinc-200' : 'border-zinc-800/80'} pt-6`}>
+                <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 border-t ${isLight ? 'border-zinc-200' : 'border-zinc-800/80'} pt-6 text-left`}>
                   <div>
                     <span className={`text-xs ${isLight ? 'text-zinc-400' : 'text-zinc-505'} uppercase tracking-wider block`}>Email Address</span>
-                    <span className={`${textSubtleClass} text-sm sm:text-base font-medium`}>{user.email}</span>
+                    <span className={`${textSubtleClass} text-sm sm:text-base font-medium truncate block`}>{user.email}</span>
+                  </div>
+                  <div>
+                    <span className={`text-xs ${isLight ? 'text-zinc-400' : 'text-zinc-505'} uppercase tracking-wider block`}>Gender</span>
+                    <span className={`${textSubtleClass} text-sm sm:text-base font-medium capitalize block`}>{user.gender || "Unspecified"}</span>
+                  </div>
+                  <div>
+                    <span className={`text-xs ${isLight ? 'text-zinc-400' : 'text-zinc-505'} uppercase tracking-wider block`}>Location</span>
+                    <span className={`${textSubtleClass} text-sm sm:text-base font-medium block`}>{user.location || "Earth 🌍"}</span>
+                  </div>
+                  <div>
+                    <span className={`text-xs ${isLight ? 'text-zinc-400' : 'text-zinc-505'} uppercase tracking-wider block`}>Birthday</span>
+                    <span className={`${textSubtleClass} text-sm sm:text-base font-medium block`}>{user.birthday || "Not specified"}</span>
                   </div>
                   <div>
                     <span className={`text-xs ${isLight ? 'text-zinc-400' : 'text-zinc-505'} uppercase tracking-wider block`}>Status Code</span>
-                    <span className={`${textSubtleClass} text-sm sm:text-base font-medium`}>Active Streamer 🍿</span>
+                    <span className={`${textSubtleClass} text-sm sm:text-base font-medium block`}>Active Streamer 🍿</span>
                   </div>
                 </div>
               </div>
@@ -806,22 +879,22 @@ export default function Home() {
               <FaTimes size={16} />
             </button>
 
-            <h3 className="text-2xl font-bold">Edit Profile Details</h3>
+            <h3 className="text-xl font-bold">Edit Profile Details</h3>
             <p className={`${textMutedClass} text-xs sm:text-sm mt-1`}>
-              Update your nickname and profile avatar. You cannot edit your email.
+              Customize your profile details. Password changes require OTP verification.
             </p>
 
-            <form onSubmit={handleUpdateProfile} className="mt-6 space-y-5">
+            <form onSubmit={handleUpdateProfile} className="mt-6 space-y-4">
               {/* Profile Avatar Upload preview & input */}
               <div className="flex items-center gap-4">
-                <div className={`relative group w-16 h-16 rounded-2xl overflow-hidden border flex items-center justify-center flex-shrink-0 ${isLight ? 'bg-zinc-100 border-zinc-300' : 'bg-zinc-900/60 border-zinc-700'}`}>
+                <div className={`relative group w-14 h-14 rounded-2xl overflow-hidden border flex items-center justify-center flex-shrink-0 ${isLight ? 'bg-zinc-100 border-zinc-300' : 'bg-zinc-900/60 border-zinc-700'}`}>
                   {editProfilePic ? (
                     <img src={editProfilePic} alt="Preview" className="w-full h-full object-cover" />
                   ) : (
-                    <FaUser className="text-zinc-500" size={24} />
+                    <FaUser className="text-zinc-500" size={20} />
                   )}
                   <label className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition duration-200">
-                    <FaCamera size={14} className="text-white" />
+                    <FaCamera size={12} className="text-white" />
                     <input
                       type="file"
                       accept="image/*"
@@ -830,35 +903,126 @@ export default function Home() {
                     />
                   </label>
                 </div>
-                <div className="text-xs">
+                <div className="text-[11px]">
                   <span className="font-bold block">Avatar Picture</span>
-                  <span className={textMutedClass}>Max size: 2MB. Click preview avatar box to upload.</span>
+                  <span className={textMutedClass}>Max size: 2MB. Click preview box to upload.</span>
                 </div>
               </div>
 
-              {/* Name */}
-              <div className="space-y-2">
-                <label className={`text-xs font-semibold ${isLight ? 'text-zinc-500' : 'text-zinc-400'}`}>Display Name</label>
-                <input
-                  type="text"
-                  required
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  className={`w-full rounded-xl px-3.5 py-2.5 text-sm outline-none transition border ${inputThemeClass}`}
+              {/* Row 1: Name and Location */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5 text-left">
+                  <label className={`text-[11px] font-bold uppercase tracking-wider ${isLight ? 'text-zinc-500' : 'text-zinc-400'}`}>Display Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    className={`w-full rounded-xl px-3 py-2 text-xs outline-none transition border ${inputThemeClass}`}
+                  />
+                </div>
+                <div className="space-y-1.5 text-left">
+                  <label className={`text-[11px] font-bold uppercase tracking-wider ${isLight ? 'text-zinc-500' : 'text-zinc-400'}`}>Location</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. New York, USA"
+                    value={editLocation}
+                    onChange={(e) => setEditLocation(e.target.value)}
+                    className={`w-full rounded-xl px-3 py-2 text-xs outline-none transition border ${inputThemeClass}`}
+                  />
+                </div>
+              </div>
+
+              {/* Row 2: Gender and Birthday */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5 text-left">
+                  <label className={`text-[11px] font-bold uppercase tracking-wider ${isLight ? 'text-zinc-500' : 'text-zinc-400'}`}>Gender</label>
+                  <select
+                    value={editGender}
+                    onChange={(e) => setEditGender(e.target.value)}
+                    className={`w-full rounded-xl px-3 py-2 text-xs outline-none transition border ${inputThemeClass}`}
+                  >
+                    <option value="">Unspecified</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="non-binary">Non-binary</option>
+                    <option value="prefer-not-to-say">Prefer not to say</option>
+                  </select>
+                </div>
+                <div className="space-y-1.5 text-left">
+                  <label className={`text-[11px] font-bold uppercase tracking-wider ${isLight ? 'text-zinc-500' : 'text-zinc-400'}`}>Birthday</label>
+                  <input
+                    type="date"
+                    value={editBirthday}
+                    onChange={(e) => setEditBirthday(e.target.value)}
+                    className={`w-full rounded-xl px-3 py-2 text-xs outline-none transition border ${inputThemeClass}`}
+                  />
+                </div>
+              </div>
+
+              {/* Row 3: Bio */}
+              <div className="space-y-1.5 text-left">
+                <label className={`text-[11px] font-bold uppercase tracking-wider ${isLight ? 'text-zinc-500' : 'text-zinc-400'}`}>Short Bio</label>
+                <textarea
+                  placeholder="Tell us about yourself..."
+                  value={editBio}
+                  onChange={(e) => setEditBio(e.target.value)}
+                  rows={2}
+                  className={`w-full rounded-xl px-3 py-2 text-xs outline-none transition border resize-none ${inputThemeClass}`}
                 />
               </div>
 
               {/* Password */}
-              <div className="space-y-2">
-                <label className={`text-xs font-semibold ${isLight ? 'text-zinc-500' : 'text-zinc-400'}`}>New Password (Optional)</label>
+              <div className="space-y-1.5 text-left">
+                <label className={`text-[11px] font-bold uppercase tracking-wider ${isLight ? 'text-zinc-500' : 'text-zinc-400'}`}>New Password (Optional)</label>
                 <input
                   type="password"
                   placeholder="Enter new password to change"
                   value={editPassword}
-                  onChange={(e) => setEditPassword(e.target.value)}
-                  className={`w-full rounded-xl px-3.5 py-2.5 text-sm outline-none transition border ${inputThemeClass}`}
+                  onChange={(e) => {
+                    setEditPassword(e.target.value);
+                    if (!e.target.value) {
+                      setIsPasswordOtpSent(false);
+                      setEditOtp("");
+                      setOtpSuccessMessage("");
+                    }
+                  }}
+                  className={`w-full rounded-xl px-3.5 py-2.5 text-xs outline-none transition border ${inputThemeClass}`}
                 />
               </div>
+
+              {editPassword && (
+                <div className={`p-4 rounded-2xl border space-y-3 text-left ${isLight ? 'bg-zinc-50 border-zinc-200' : 'bg-zinc-900/40 border-zinc-800'}`}>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[11px] font-bold text-red-500 uppercase tracking-wider">OTP Verification Required</span>
+                    <button
+                      type="button"
+                      disabled={otpLoading}
+                      onClick={handleRequestPasswordOTP}
+                      className="text-xs text-red-400 hover:text-red-300 font-bold transition disabled:opacity-50 cursor-pointer"
+                    >
+                      {otpLoading ? "Sending..." : isPasswordOtpSent ? "Resend OTP" : "Request OTP"}
+                    </button>
+                  </div>
+                  <p className={`text-[10px] ${textMutedClass}`}>
+                    To update your password, you must verify your identity.
+                  </p>
+                  <input
+                    type="text"
+                    maxLength={6}
+                    placeholder="Enter 6-digit OTP code"
+                    value={editOtp}
+                    onChange={(e) => setEditOtp(e.target.value)}
+                    className={`w-full text-center tracking-widest font-mono text-sm rounded-xl px-3 py-2 outline-none transition border ${inputThemeClass}`}
+                    required={!!editPassword}
+                  />
+                  {otpSuccessMessage && (
+                    <div className="text-[10px] text-green-400 font-semibold leading-normal">
+                      {otpSuccessMessage}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Alerts */}
               {editError && (

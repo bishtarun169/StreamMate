@@ -18,20 +18,27 @@ const userSchema = new mongoose.Schema({
     required: true,
   },
 
-  isVerified: {
-    type: Boolean,
-    default: false,
-  },
-
-  otp: {
-    type: String,
-  },  
-  
-  otpExpiry: {
-    type: Date,
-  },
-
   profilePic: {
+    type: String,
+    default: "",
+  },
+
+  gender: {
+    type: String,
+    default: "",
+  },
+
+  bio: {
+    type: String,
+    default: "",
+  },
+
+  location: {
+    type: String,
+    default: "",
+  },
+
+  birthday: {
     type: String,
     default: "",
   },
@@ -46,6 +53,22 @@ const userSchema = new mongoose.Schema({
       type: String,
       default: "everyone",
     },
+  },
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
+  otp: {
+    type: String,
+    default: null,
+  },
+  otpExpiry: {
+    type: Date,
+    default: null,
+  },
+  resetCode: {
+    type: String,
+    default: null,
   },
 }, { timestamps: true });
 

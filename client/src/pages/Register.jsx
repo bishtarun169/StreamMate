@@ -1,8 +1,9 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { FaEye, FaEyeSlash, FaChevronLeft } from "react-icons/fa";
 
 export default function Register() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -50,10 +51,12 @@ export default function Register() {
       if (response.ok) {
         setMessage(data.message || "Registration successful!");
 
-        setFullName("");
-        setEmail("");
-        setPassword("");
-        setConfirmPassword("");
+        // Save email in localStorage for verification pre-fill fallback
+        localStorage.setItem("verify_email", email);
+
+        setTimeout(() => {
+          navigate("/verify-email", { state: { email } });
+        }, 1500);
       } else {
         setError(data.message || "Something went wrong");
       }
