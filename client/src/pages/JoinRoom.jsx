@@ -39,14 +39,12 @@ export default function JoinRoom() {
   const handleJoin = (e) => {
     e.preventDefault();
     console.log("Joining room:", { roomCode, nickname, password });
-    alert(`Joined room "${roomCode}" as "${nickname}"!`);
-    navigate("/");
+    navigate(`/room/${roomCode.toUpperCase()}`, { state: { nickname, isCreator: false } });
   };
 
   const handleQuickJoin = (room) => {
-    setRoomCode(room.id);
-    setNickname("Guest_" + Math.floor(Math.random() * 1000));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const guestName = "Guest_" + Math.floor(Math.random() * 1000);
+    navigate(`/room/${room.id}`, { state: { nickname: guestName, roomName: room.name, isCreator: false } });
   };
 
   return (
@@ -60,7 +58,7 @@ export default function JoinRoom() {
         {/* Navigation & Header */}
         <div className="self-start">
           <Link
-            to="/"
+            to="/home"
             className="inline-flex items-center gap-2 text-zinc-400 hover:text-white mb-4 text-sm transition duration-200"
           >
             <FaChevronLeft size={12} /> Back to Home
