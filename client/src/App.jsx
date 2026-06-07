@@ -8,6 +8,8 @@ import JoinRoom from "./pages/JoinRoom";
 import Home from "./pages/Home";
 import VerifyEmail from "./pages/VerifyEmail";
 import ForgotPassword from "./pages/ForgotPassword";
+import Room from "./pages/Room";
+
 
 function App() {
   return (
@@ -21,6 +23,7 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/room/:roomId" element={<Room />} />
       </Routes>
     </BrowserRouter>
   );
