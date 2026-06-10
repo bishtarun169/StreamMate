@@ -6,9 +6,9 @@ const authMiddleware = require('../middleware/authMiddleware');
 const { roomExists } = require('../middleware/roomMiddleware');
 
 // Send a message
-router.post('/:id/messages', authMiddleware, roomExists, sendMessage);
+router.post('/:roomID', authMiddleware, roomExists, sendMessage);
 
 // Get messages for a room
-router.get('/:id/messages', authMiddleware, roomExists, getMessages);
+router.get('/:roomID', authMiddleware, roomExists, getMessages);
 
 module.exports = router;

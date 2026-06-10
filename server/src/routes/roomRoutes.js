@@ -15,11 +15,15 @@ router.post('/create-room', authMiddle, createRoom);
 // @access  Private
 router.post('/join-room', authMiddle, joinRoom);
 
+// @route   GET /api/rooms/code/:roomCode
+// @desc    Get room details by room code
+// @access  Private
+router.get('/code/:roomCode', authMiddle, getRoomByCode);
 
 // @route   POST /api/rooms/:id/leave
 // @desc    Leave a room
 // @access  Private
-router.post('/leave/:id', authMiddle, leaveRoom);
+router.post('/:id/leave', authMiddle, leaveRoom);
 
 // @route   GET /api/rooms/:id
 // @desc    Get room details
@@ -31,9 +35,6 @@ router.get('/:id', authMiddle, getRoom);
 // @access  Private
 router.get('/:id/participants', authMiddle, getParticipants);
 
-// @route   GET /api/rooms/code/:roomCode
-// @desc    Get room details by room code
-// @access  Private
-router.get('/code/:roomCode', authMiddle, getRoomByCode);
+
 
 module.exports = router; 
