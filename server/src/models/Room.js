@@ -5,6 +5,7 @@ const roomSchema = new mongoose.Schema({
      roomName: {
           type: String,
           required: true,
+          trim: true,
      },
      videoURL: {
           type: String,
@@ -29,9 +30,39 @@ const roomSchema = new mongoose.Schema({
           unique: true,
      },
      participants: [{
+     user: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: 'User',
+          ref: "User"
+     },
+
+     joinedAt: {
+          type: Date,
+          default: Date.now
+     },
+
+     role: {
+          type: String,
+          enum: ["host", "member"],
+          default: "member"
+     }
      }],
+     // Sync state
+     currentTime: {
+          type: Number,
+          default: 0,
+     },
+     isPlaying: {
+          type: Boolean,
+          default: false,
+     },
+     videoStateUpdatedAt: {
+          type: Date,
+          default: Date.now,
+     },
+     isActive: {
+          type: Boolean,
+          default: true,
+     },    
 }, { timestamps: true });
 
 const Room = mongoose.model('Room', roomSchema);
