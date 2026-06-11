@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { FaEye, FaEyeSlash, FaChevronLeft } from "react-icons/fa";
+import { API_BASE } from "../config/api";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -14,14 +15,15 @@ export default function Login() {
 
   const [error, setError] = useState("");
 
+  const [loading, setLoading] = useState(false);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setMessage("");
-    setError("");
+    setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
+      const response = await fetch(`${API_BASE}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -41,7 +43,14 @@ export default function Login() {
         if (data.token) {
           localStorage.setItem("token", data.token);
         }
-        
+
+        // Store user theme preference
+        if (data.user && data.user.settings && data.user.settings.theme) {
+          localStorage.setItem("theme", data.user.settings.theme);
+        } else {
+          localStorage.setItem("theme", "light");
+        }
+
         // Redirect to /home after 1 second
         setTimeout(() => {
           navigate("/home");
@@ -59,6 +68,8 @@ export default function Login() {
     } catch (err) {
       setError("Unable to connect to server");
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -119,7 +130,10 @@ export default function Login() {
 
           {/* Forgot Password Link */}
           <div className="text-right">
-            <Link to="/forgot-password" className="text-xs text-red-400 hover:text-red-300 transition hover:underline">
+            <Link
+              to="/forgot-password"
+              className="text-xs text-red-400 hover:text-red-300 transition hover:underline"
+            >
               Forgot Password?
             </Link>
           </div>
@@ -129,7 +143,10 @@ export default function Login() {
             <div className="bg-red-500/10 border border-red-500 text-red-400 rounded-xl px-4 py-3 text-sm">
               {error}
               {error.toLowerCase().includes("verify") && (
-                <Link to="/verify-email" className="block text-red-300 underline font-bold mt-1.5 hover:text-red-200">
+                <Link
+                  to="/verify-email"
+                  className="block text-red-300 underline font-bold mt-1.5 hover:text-red-200"
+                >
                   Verify your email here
                 </Link>
               )}
@@ -146,9 +163,10 @@ export default function Login() {
           {/* Login Button */}
           <button
             type="submit"
-            className="w-full bg-red-600 py-3 rounded-xl font-semibold text-white hover:bg-red-700 hover:shadow-lg hover:shadow-red-500/20 transition-all duration-200 cursor-pointer"
+            disabled={loading}
+            className="w-full bg-red-600 py-3 rounded-xl font-semibold text-white hover:bg-red-700 hover:shadow-lg hover:shadow-red-500/20 transition-all duration-200 cursor-pointer disabled:opacity-50"
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
