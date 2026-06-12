@@ -3,6 +3,7 @@ const express = require('express');
 const authRoutes = require('./routes/authRoutes');
 const roomRoutes = require('./routes/roomRoutes');
 const chatRoutes = require('./routes/chatRoute');
+const friendRoutes = require('./routes/friendRoutes');
 
 const { generalAuthLimiter, strictAuthLimiter} = require("./middleware/ratelimiter");
 
@@ -28,5 +29,6 @@ app.use('/api/auth/register', generalAuthLimiter);
 app.use('/api/auth', authRoutes);
 app.use('/api/rooms', roomRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/friends', friendRoutes);
 
 module.exports = app;    

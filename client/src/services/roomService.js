@@ -20,7 +20,7 @@ export const fetchRoom = async (roomId) => {
 };
 
 export const fetchFriends = async () => {
-  const response = await fetch(`${API_BASE}/api/auth/friends`, {
+  const response = await fetch(`${API_BASE}/api/friends/list`, {
     headers: getHeaders(),
   });
   if (!response.ok) {
@@ -58,7 +58,7 @@ export const fetchParticipants = async (roomDbId) => {
 };
 
 export const inviteFriend = async (friendId, roomId, roomName) => {
-  const response = await fetch(`${API_BASE}/api/auth/friends/invite`, {
+  const response = await fetch(`${API_BASE}/api/friends/invite`, {
     method: "POST",
     headers: getHeaders(),
     body: JSON.stringify({ friendId, roomId, roomName }),

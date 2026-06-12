@@ -1,3 +1,6 @@
+
+const User = require('../models/User');
+
 // Add a friend by User ID
 const addFriend = async (req, res) => {
      try {

@@ -31,7 +31,7 @@ export const fetchRecentRooms = async () => {
 };
 
 export const addFriend = async (friendUserId) => {
-  const response = await fetch(`${API_BASE}/api/auth/friends/add`, {
+  const response = await fetch(`${API_BASE}/api/friends/add`, {
     method: "POST",
     headers: getHeaders(),
     body: JSON.stringify({ friendUserId }),
@@ -44,7 +44,7 @@ export const addFriend = async (friendUserId) => {
 };
 
 export const removeFriend = async (friendId) => {
-  const response = await fetch(`${API_BASE}/api/auth/friends/${friendId}`, {
+  const response = await fetch(`${API_BASE}/api/friends/${friendId}`, {
     method: "DELETE",
     headers: getHeaders(),
   });
