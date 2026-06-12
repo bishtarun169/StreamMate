@@ -6,7 +6,7 @@ import RoomHeader from "../components/room/RoomHeader";
 import VideoPlayer from "../components/room/VideoPlayer";
 import ChatPanel from "../components/room/ChatPanel";
 import ParticipantsPanel from "../components/room/ParticipantsPanel";
-import Toast from "../components/common/Toast";
+import Toast from "../components/Common/Toast";
 
 import useRoomData from "../hooks/useRoomData";
 import useVideoSync from "../hooks/useVideoSync";
