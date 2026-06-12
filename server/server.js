@@ -1,4 +1,5 @@
 require("dotenv").config();
+const http = require('http');
 
 // env file check
 if (!process.env.JWT_SECRET) {
@@ -13,7 +14,22 @@ connectDB();
 
 const PORT = process.env.PORT || 5000;
 
-const server = app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+const initializeSocket = require("./src/socket");
+const server = http.createServer(app);
+
+const io = require("socket.io")(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+    }
 });
 
+// make io available to controllers
+app.set("io", io);
+
+// initialize all socket handlers
+initializeSocket(io);
+
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
