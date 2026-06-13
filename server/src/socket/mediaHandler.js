@@ -5,7 +5,6 @@ const { lastIncrementMap } = require("./socketState");
 
 function mediaHandler (io, socket) {
      // host-play
-     console.log("host played");
      socket.on("host-play", ({ roomId, currentTime }) => {
           if (!roomId) return;
           socket.to(roomId).emit("media-play", {
