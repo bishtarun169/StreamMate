@@ -1,4 +1,6 @@
 const User = require("../models/User");
+const Room = require("../models/Room");
+
 const { roomConnections, cleanupTimeouts } = require("./socketState");
 
 function roomHandler (io, socket) {

@@ -1,11 +1,6 @@
 require("dotenv").config();
 const http = require('http');
 
-// env file check
-if (!process.env.JWT_SECRET) {
-  throw new Error('JWT_SECRET is missing in .env');
-}
-
 const app = require("./src/app");
 
 // Connect through Mongodb
