@@ -98,15 +98,13 @@ CLOUDINARY_API_KEY=your_cloudinary_api_key
 CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 EMAIL_USER=your_email@example.com
 EMAIL_PASS=your_email_app_password
-``
+```
 
-Create a `.env` file inside the `client` directory.
+- Create a `.env` file inside the `client` directory.
 
 ```env
 VITE_API_URL=http://localhost:5000
 ```
-
----
 
 ## ▶️ Running the Application
 
@@ -184,7 +182,7 @@ Contributions, suggestions, and bug reports are welcome. If you'd like to improv
 This project is licensed under the **MIT License**. See the `LICENSE` file for more information.
 
 <div align="center">
-**Built with ❤️ using React, Node.js, Express.js, MongoDB, Socket.IO, Tailwind CSS, and Cloudinary.**
+Built with ❤️ using React, Node.js, Express.js, MongoDB, Socket.IO, Tailwind CSS, and Cloudinary.
 If you found this project useful, consider giving it a ⭐ on GitHub.
 
 </div>
