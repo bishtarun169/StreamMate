@@ -1,7 +1,14 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { FaChevronLeft, FaKey, FaEnvelope } from "react-icons/fa";
+import { FaChevronLeft } from "react-icons/fa";
 import { API_BASE } from "../config/api";
+// Auth Components
+import AuthCard from "../components/auth/AuthCard";
+import AuthHeader from "../components/auth/AuthHeader";
+// UI Components
+import Input from "../components/ui/Input";
+import Button from "../components/ui/Button";
+import Alert from "../components/ui/Alert";
 
 export default function VerifyEmail() {
   const navigate = useNavigate();
@@ -78,7 +85,7 @@ export default function VerifyEmail() {
 
       const data = await response.json();
       if (response.ok) {
-        setResendMessage("Verification code resent! Check your terminal console.");
+        setResendMessage("Verification code resent!");
       } else {
         setError(data.message || "Failed to resend code");
       }
@@ -94,7 +101,7 @@ export default function VerifyEmail() {
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-red-500/10 rounded-full blur-[120px] pointer-events-none"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-red-500/5 rounded-full blur-[120px] pointer-events-none"></div>
 
-      <div className="w-full max-w-md bg-[#18181b]/80 backdrop-blur-md p-8 sm:p-10 rounded-lg border border-zinc-800 shadow-2xl relative z-10">
+      <AuthCard className="relative z-10">
         
         {/* Back Link */}
         <Link
@@ -105,72 +112,56 @@ export default function VerifyEmail() {
         </Link>
 
         {/* Heading */}
-        <h1 className="text-3xl font-extrabold text-white">
-          Verify <span className="text-red-500">Email</span>
-        </h1>
-        <p className="text-zinc-400 mt-2 text-sm">
-          Please enter the 6-digit OTP code sent to your email.
-        </p>
+        <AuthHeader
+            title="Verify Email"
+            subtitle="Please enter the 6-digit OTP sent to your email."
+        />
 
         {/* Verification Form */}
         <form onSubmit={handleSubmit} className="mt-8 space-y-5">
           
           {/* Email input */}
-          <div className="space-y-2">
-            <label className="text-xs font-semibold text-zinc-400 flex items-center gap-1.5">
-              <FaEnvelope className="text-red-500" size={12} /> Email Address
-            </label>
-            <input
+          <Input
               type="email"
-              required
-              placeholder="Enter your email"
+              placeholder="Email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-zinc-900/60 border border-zinc-700 rounded-lg px-4 py-3 text-white outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/50 transition duration-200"
-            />
-          </div>
+              onChange={(e)=>setEmail(e.target.value)}
+              required
+          />
 
           {/* OTP Input */}
-          <div className="space-y-2">
-            <label className="text-xs font-semibold text-zinc-400 flex items-center gap-1.5">
-              <FaKey className="text-red-500" size={12} /> OTP Verification Code
-            </label>
-            <input
-              type="text"
-              required
-              maxLength={6}
+          <Input
               placeholder="Enter OTP"
               value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              className="w-full bg-zinc-900/60 border border-zinc-700 rounded-lg px-4 py-3 text-center font-serif text-lg text-white outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/50 transition duration-200"
-            />
-          </div>
+              onChange={(e)=>setOtp(e.target.value)}
+              maxLength={6}
+              required
+              className="text-center font-mono tracking-[0.35em]"
+          />
 
           {/* Alert Messages */}
           {error && (
-            <div className="bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg px-4 py-3 text-xs leading-normal">
-              {error}
-            </div>
+              <Alert type="error">
+                  {error}
+              </Alert>
           )}
           {message && (
-            <div className="bg-green-500/10 border border-green-500/20 text-green-400 rounded-lg px-4 py-3 text-xs leading-normal">
-              {message}
-            </div>
+              <Alert type="success">
+                  {message}
+              </Alert>
           )}
-          {resendMessage && (
-            <div className="bg-zinc-800/80 border border-zinc-700 text-zinc-350 rounded-lg px-4 py-3 text-xs leading-normal">
+          <Alert type="info">
               {resendMessage}
-            </div>
-          )}
+          </Alert>
 
           {/* Submit CTA */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-red-600 py-3.5 rounded-lg font-semibold text-white hover:bg-red-700 hover:shadow-lg hover:shadow-red-500/20 transition duration-200 active:scale-[0.98] disabled:opacity-50 cursor-pointer"
+          <Button
+              type="submit"
+              loading={loading}
+              fullWidth
           >
-            {loading ? "Verifying..." : "Verify Email"}
-          </button>
+              Verify Email
+          </Button>
 
         </form>
 
@@ -185,7 +176,7 @@ export default function VerifyEmail() {
           </button>
         </div>
 
-      </div>
+      </AuthCard>
     </div>
   );
 }
