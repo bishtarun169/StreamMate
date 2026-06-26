@@ -10,6 +10,7 @@ const transporter = nodeMailer.createTransport({
 });  
 
 const sendEmail = async (to, otp, options = {}) => {
+    console.log("sendEmail called");
     const {
         title = "Email Verification",
         description = "verify your email address"
