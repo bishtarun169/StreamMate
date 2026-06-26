@@ -1,25 +1,28 @@
-import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { FaEye, FaEyeSlash, FaChevronLeft } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+import { FaChevronLeft } from "react-icons/fa";
 import { API_BASE } from "../config/api";
+// Auth Components
+import AuthCard from "../components/auth/AuthCard";
+import PasswordField from "../components/auth/PasswordField";
+import AuthHeader from "../components/auth/AuthHeader";
+
+// UI Components
+import Alert from "../components/ui/Alert";
+import Button from "../components/ui/Button"
+import Input from "../components/ui/Input"
 
 export default function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-
   const [identifier, setIdentifier] = useState("");
-
   const [password, setPassword] = useState("");
-
   const [message, setMessage] = useState("");
-
   const [error, setError] = useState("");
-
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setLoading(true);
 
     try {
@@ -35,20 +38,12 @@ export default function Login() {
       });
 
       const data = await response.json();
-
       if (response.ok) {
         setMessage(data.message || "Login successful!");
 
-        // Store JWT token if backend sends one
+        // Store JWT token sended by backend
         if (data.token) {
           localStorage.setItem("token", data.token);
-        }
-
-        // Store user theme preference
-        if (data.user && data.user.settings && data.user.settings.theme) {
-          localStorage.setItem("theme", data.user.settings.theme);
-        } else {
-          localStorage.setItem("theme", "light");
         }
 
         // Redirect to /home after 1 second
@@ -80,56 +75,42 @@ export default function Login() {
 
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-red-500/5 rounded-full blur-[120px] pointer-events-none"></div>
 
-      <div className="w-full max-w-md bg-[#18181b]/80 backdrop-blur-md p-8 sm:p-10 rounded-3xl border border-zinc-800 shadow-2xl relative z-10">
+        <AuthCard className="relative z-10">
         {/* Back Button */}
         <Link
           to="/"
           className="inline-flex items-center gap-2 text-zinc-400 hover:text-white mb-6 text-sm transition duration-200"
         >
-          <FaChevronLeft size={12} />
+        <FaChevronLeft size={12} />
           Back to Home
         </Link>
 
         {/* Heading */}
-        <h1 className="text-4xl font-bold text-red-500 text-center">
-          StreamMate
-        </h1>
-
-        <p className="text-center text-zinc-400 mt-2">Welcome back</p>
+        <AuthHeader
+            title="StreamMate"
+            subtitle="Welcome back"
+            highlight
+          />
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-5">
           {/* Email or User ID */}
-          <input
-            type="text"
+          <Input
             placeholder="Email or User ID"
             value={identifier}
             onChange={(e) => setIdentifier(e.target.value)}
-            className="w-full bg-zinc-900/60 border border-zinc-700 rounded-xl px-4 py-3 text-white outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/50 transition"
             required
           />
 
           {/* Password */}
-          <div className="relative">
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
+          <PasswordField
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-zinc-900/60 border border-zinc-700 rounded-xl px-4 py-3 pr-12 text-white outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/50 transition"
-              required
-            />
-
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white"
-            >
-              {showPassword ? <FaEyeSlash /> : <FaEye />}
-            </button>
-          </div>
+              showPassword={showPassword}
+              setShowPassword={setShowPassword}
+          />
 
           {/* Forgot Password Link */}
-          <div className="text-right">
+          <div className="text-right text-semibold">
             <Link
               to="/forgot-password"
               className="text-xs text-red-400 hover:text-red-300 transition hover:underline"
@@ -140,43 +121,42 @@ export default function Login() {
 
           {/* Error Message */}
           {error && (
-            <div className="bg-red-500/10 border border-red-500 text-red-400 rounded-xl px-4 py-3 text-sm">
+            <Alert type="error">
               {error}
               {error.toLowerCase().includes("verify") && (
                 <Link
                   to="/verify-email"
-                  className="block text-red-300 underline font-bold mt-1.5 hover:text-red-200"
+                  className="mt-2 block font-bold text-red-300 underline hover:text-red-200"
                 >
                   Verify your email here
                 </Link>
               )}
-            </div>
+            </Alert>
           )}
 
           {/* Success Message */}
           {message && (
-            <div className="bg-green-500/10 border border-green-500 text-green-400 rounded-xl px-4 py-3 text-sm">
+            <Alert type="success">
               {message}
-            </div>
+            </Alert>
           )}
-
           {/* Login Button */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-red-600 py-3 rounded-xl font-semibold text-white hover:bg-red-700 hover:shadow-lg hover:shadow-red-500/20 transition-all duration-200 cursor-pointer disabled:opacity-50"
+          <Button
+              type="submit"
+              loading={loading}
+              fullWidth
           >
-            {loading ? "Logging in..." : "Login"}
-          </button>
+              Login
+          </Button>
         </form>
 
         <p className="text-center text-zinc-400 mt-6">
           No account?{" "}
-          <Link to="/register" className="text-red-400 hover:text-red-300">
-            Register
+          <Link to="/register" className="text-red-400 hover:text-red-500">
+            Create an Account
           </Link>
         </p>
-      </div>
+      </AuthCard>
     </div>
   );
 }
