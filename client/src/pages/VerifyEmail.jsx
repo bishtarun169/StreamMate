@@ -94,7 +94,7 @@ export default function VerifyEmail() {
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-red-500/10 rounded-full blur-[120px] pointer-events-none"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-red-500/5 rounded-full blur-[120px] pointer-events-none"></div>
 
-      <div className="w-full max-w-md bg-[#18181b]/80 backdrop-blur-md p-8 sm:p-10 rounded-3xl border border-zinc-800 shadow-2xl relative z-10">
+      <div className="w-full max-w-md bg-[#18181b]/80 backdrop-blur-md p-8 sm:p-10 rounded-lg border border-zinc-800 shadow-2xl relative z-10">
         
         {/* Back Link */}
         <Link
@@ -109,7 +109,7 @@ export default function VerifyEmail() {
           Verify <span className="text-red-500">Email</span>
         </h1>
         <p className="text-zinc-400 mt-2 text-sm">
-          Please enter the 6-digit OTP code sent to your email. Check your backend node server console logs.
+          Please enter the 6-digit OTP code sent to your email.
         </p>
 
         {/* Verification Form */}
@@ -126,7 +126,7 @@ export default function VerifyEmail() {
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-zinc-900/60 border border-zinc-700 rounded-xl px-4 py-3 text-white outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/50 transition duration-200"
+              className="w-full bg-zinc-900/60 border border-zinc-700 rounded-lg px-4 py-3 text-white outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/50 transition duration-200"
             />
           </div>
 
@@ -139,26 +139,26 @@ export default function VerifyEmail() {
               type="text"
               required
               maxLength={6}
-              placeholder="Enter 6-digit code"
+              placeholder="Enter OTP"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
-              className="w-full bg-zinc-900/60 border border-zinc-700 rounded-xl px-4 py-3 text-center tracking-widest font-mono text-lg text-white outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/50 transition duration-200"
+              className="w-full bg-zinc-900/60 border border-zinc-700 rounded-lg px-4 py-3 text-center font-serif text-lg text-white outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/50 transition duration-200"
             />
           </div>
 
           {/* Alert Messages */}
           {error && (
-            <div className="bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl px-4 py-3 text-xs leading-normal">
+            <div className="bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg px-4 py-3 text-xs leading-normal">
               {error}
             </div>
           )}
           {message && (
-            <div className="bg-green-500/10 border border-green-500/20 text-green-400 rounded-xl px-4 py-3 text-xs leading-normal">
+            <div className="bg-green-500/10 border border-green-500/20 text-green-400 rounded-lg px-4 py-3 text-xs leading-normal">
               {message}
             </div>
           )}
           {resendMessage && (
-            <div className="bg-zinc-800/80 border border-zinc-700 text-zinc-350 rounded-xl px-4 py-3 text-xs leading-normal">
+            <div className="bg-zinc-800/80 border border-zinc-700 text-zinc-350 rounded-lg px-4 py-3 text-xs leading-normal">
               {resendMessage}
             </div>
           )}
@@ -167,7 +167,7 @@ export default function VerifyEmail() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-red-600 py-3.5 rounded-xl font-semibold text-white hover:bg-red-700 hover:shadow-lg hover:shadow-red-500/20 transition duration-200 active:scale-[0.98] disabled:opacity-50 cursor-pointer"
+            className="w-full bg-red-600 py-3.5 rounded-lg font-semibold text-white hover:bg-red-700 hover:shadow-lg hover:shadow-red-500/20 transition duration-200 active:scale-[0.98] disabled:opacity-50 cursor-pointer"
           >
             {loading ? "Verifying..." : "Verify Email"}
           </button>
