@@ -74,14 +74,6 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: null,
   },
-  resetCode: {
-    type: String,
-    default: null,
-  },
-  resetCodeExpiry: {
-    type: Date,
-    default: null,
-  },
   roomsCreated: {
     type: Number,
     default: 0,
@@ -108,5 +100,4 @@ const userSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);
-
 module.exports = User;
