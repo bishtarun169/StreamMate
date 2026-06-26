@@ -5,12 +5,11 @@ import { API_BASE } from "../config/api";
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
-  const [step, setStep] = useState(1); // 1: Send Email, 2: Enter Code & Password
+  const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
-  const [code, setCode] = useState("");
+  const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -67,7 +66,7 @@ export default function ForgotPassword() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, code, newPassword }),
+        body: JSON.stringify({ email, otp, newPassword }),
       });
 
       const data = await response.json();
@@ -187,8 +186,8 @@ export default function ForgotPassword() {
                 required
                 maxLength={6}
                 placeholder="6-digit reset code"
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
                 className="w-full bg-zinc-900/60 border border-zinc-700 rounded-xl px-4 py-3 text-center tracking-widest font-mono text-lg text-white outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/50 transition duration-200"
               />
             </div>

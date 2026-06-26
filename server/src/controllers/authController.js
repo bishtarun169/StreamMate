@@ -7,9 +7,11 @@ const sendOTPEmail = require('../utils/sendEmail');
 const validatePasswordStrength = require('../utils/passwordStrength');
 const validator = require('validator');
 const generateOTP = require('../utils/generateOTP')
-const verifyOTp = require('../utils/verifyOTP')
+const verifyOtpCode = require('../utils/verifyOTP')
 const otpService = require('../utils/otpService')
 const OTP_Templates = require('../utils/emailTemplates')
+const clearOTP = require('../utils/clearOTP')
+
 require('dotenv').config();
 
 // User registration controller
@@ -67,13 +69,12 @@ const registerUser = async (req, res) => {
           const salt = await bcrypt.genSalt(10);
           const hashedPassword = await bcrypt.hash(password, salt);
 
-          // OTP generation
+          // Create new user
+          user = new User({ name, email: email.toLowerCase(), password: hashedPassword, userId: userId.toLowerCase(), isVerified: false, friends: [] });
           await otpService.sendOTP(
                user,
-               OTP_Templates.RESET_PASSWORD
-          );      
-          // Create new user
-          user = new User({ name, email: email.toLowerCase(), password: hashedPassword, userId: userId.toLowerCase(), otp, otpExpiry, isVerified: false, friends: [] });
+               OTP_Templates.VERIFY_EMAIL
+          );   
           await user.save();
 
           res.status(201).json({ 
@@ -94,11 +95,10 @@ const verifyOTP = async (req, res) => {
           if (!user) {
                return res.status(400).json({ message: 'User not found' });
           }
-          verifyOTP(user, otp);
+          verifyOtpCode(user, otp);
           // Mark user as verified and clear OTP fields
           user.isVerified = true;
-          user.otp = undefined;
-          user.otpExpiry = undefined;
+          clearOTP(user);
           await user.save();
           res.status(200).json({ message: 'OTP verified successfully. Registration complete.' });
      } catch (error) {
@@ -318,31 +318,25 @@ const forgotPassword = async (req, res) => {
           const user = await User.findOne({ email });
           if (!user) {
                return res.status(400).json({
-                    message: 'User with this email does not exist'
+                    message: 'User with this email does not exist.'
                });
           }
           // Send otp via email
-          await otpService.sendOTP(
-          user,
-          OTP_Templates.CHANGE_PASSWORD
-          );
-          res.status(200).json({
-               message: 'OTP sent to your email'
-          });
+          await otpService.sendOTP(user, OTP_Templates.RESET_PASSWORD);
+          res.status(200).json({ message: 'OTP sent successfully.' });
      } catch (error) {
-          console.error("ERROR in forgotPassword:", error);
           res.status(500).json({
                message: 'Server error'
           });
      }
 };
 
-// Reset password using otp
+// Reset password
 const resetPassword = async (req, res) => {
      try {
           const { email, otp, newPassword } = req.body;
           const user = await User.findOne({ email });
-          verifyOTP(user, otp);
+          verifyOtpCode(user, otp);
 
           const passwordCheck = validatePasswordStrength(newPassword);
           if (!passwordCheck.isValid) {
@@ -351,12 +345,10 @@ const resetPassword = async (req, res) => {
 
           const salt = await bcrypt.genSalt(10);
           user.password = await bcrypt.hash(newPassword, salt);
-          user.otp = undefined;
-          user.otpExpiry = undefined;
+          clearOTP(user);
           await user.save();
-          res.status(200).json({ message: 'Password reset successful. You can log in now.' });
+          res.status(200).json({ message: 'Password reset successful.' });
      } catch (error) {
-          console.error("ERROR in resetPassword:", error);
           res.status(500).json({ message: 'Server error' });
      }
 };
@@ -368,9 +360,8 @@ const requestPasswordOTP = async (req, res) => {
           if (!user) {
                return res.status(400).json({ message: 'User not found' });
           }
-          const otp = await generateOTP(user);
-          await sendOTPEmail(user.email, otp, "Change Password");
-          res.status(200).json({ message: 'Verification code sent to your email.' });
+          await otpService.sendOTP(user, OTP_Templates.CHANGE_PASSWORD);
+          res.status(200).json({ message: 'OTP sent successfully.' });
      } catch (error) {
           console.error("ERROR in requestPasswordOTP:", error);
           res.status(500).json({ message: 'Server error' });

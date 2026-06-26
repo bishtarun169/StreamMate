@@ -1,6 +1,6 @@
 const verifyOTP = (user, otp) => {
      if (!user) 
-          return res.status(400).json({ message: 'User not found' });
+          throw new Error("user not found");
 
      if (!user.otp)
           throw new Error("OTP not found");
