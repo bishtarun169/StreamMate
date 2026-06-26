@@ -1,6 +1,6 @@
 import React from "react";
 import { FaEdit, FaCog, FaTrash } from "react-icons/fa";
-import Footer from "../components/Common/Footer";
+import Footer from "../components/landing/Footer";
 import useHomeData from "../hooks/useHomeData";
 import useHomeActions from "../hooks/useHomeActions";
 

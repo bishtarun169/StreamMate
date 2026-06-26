@@ -1,37 +1,34 @@
-import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { FaEye, FaEyeSlash, FaChevronLeft } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+import { FaChevronLeft } from "react-icons/fa";
 import { API_BASE } from "../config/api";
+// Auth Components
+import AuthCard from "../components/auth/AuthCard";
+import AuthHeader from "../components/auth/AuthHeader";
+import PasswordField from "../components/auth/PasswordField";
+// UI Components
+import Input from "../components/ui/Input";
+import Button from "../components/ui/Button";
+import Alert from "../components/ui/Alert";
 
 export default function Register() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
   const [fullName, setFullName] = useState("");
-
   const [userId, setUserId] = useState("");
-
   const [email, setEmail] = useState("");
-
   const [password, setPassword] = useState("");
-
   const [confirmPassword, setConfirmPassword] = useState("");
-
   const [message, setMessage] = useState("");
-
   const [error, setError] = useState("");
-
   const [loading, setLoading] = useState(false);
-
   const isLengthMet = password.length >= 8;
   const isNumberMet = /[0-9]/.test(password);
   const isSpecialMet = /[^a-zA-Z0-9]/.test(password);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setMessage("");
     setError("");
 
@@ -80,10 +77,8 @@ export default function Register() {
       });
 
       const data = await response.json();
-
       if (response.ok) {
         setMessage(data.message || "Registration successful!");
-
         // Save email in localStorage for verification pre-fill fallback
         localStorage.setItem("verify_email", email);
 
@@ -102,13 +97,12 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0f0f13] text-white flex items-center justify-center px-4 py-12 relative overflow-hidden">
+    <div className="min-h-screen bg-[#0f0f13] text-white flex items-center justify-center px-4 py-8 relative overflow-hidden">
       {/* Background Blur */}
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-red-500/10 rounded-full blur-[120px] pointer-events-none"></div>
-
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-red-500/5 rounded-full blur-[120px] pointer-events-none"></div>
 
-      <div className="w-full max-w-md bg-[#18181b]/80 backdrop-blur-md p-8 sm:p-10 rounded-3xl border border-zinc-800 shadow-2xl relative z-10">
+      <AuthCard className="relative z-10">
         {/* Back Button */}
         <Link
           to="/"
@@ -119,125 +113,104 @@ export default function Register() {
         </Link>
 
         {/* Heading */}
-        <h1 className="text-4xl font-bold text-red-500 text-center">
-          StreamMate
-        </h1>
-
-        <p className="text-center text-zinc-400 mt-2">Create your account</p>
+        <AuthHeader
+            title="StreamMate"
+            subtitle="Create your account"
+            highlight
+        />
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+        <form onSubmit={handleSubmit} className="mt-4 space-y-5">
           {/* Full Name */}
-          <input
-            type="text"
-            placeholder="Full Name"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            className="w-full bg-zinc-900/60 border border-zinc-700 rounded-xl px-4 py-3 text-white outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/50 transition"
-            required
+         <Input
+              placeholder="Full Name"
+              value={fullName}
+              onChange={(e)=>setFullName(e.target.value)}
+              required
           />
 
-          {/* User ID */}
-          <input
-            type="text"
-            placeholder="User ID (unique handle, e.g. john_doe)"
-            value={userId}
-            onChange={(e) => setUserId(e.target.value)}
-            className="w-full bg-zinc-900/60 border border-zinc-700 rounded-xl px-4 py-3 text-white outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/50 transition"
-            required
-          />
-
-          {/* Email */}
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full bg-zinc-900/60 border border-zinc-700 rounded-xl px-4 py-3 text-white outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/50 transition"
-            required
-          />
-
-          {/* Password */}
-          <div className="relative">
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-zinc-900/60 border border-zinc-700 rounded-xl px-4 py-3 pr-12 text-white outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/50 transition"
+          {/* User ID & Email */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-[0.9fr_1.4fr]">
+            <Input
+              placeholder="User ID"
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
               required
             />
 
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white"
-            >
-              {showPassword ? <FaEyeSlash /> : <FaEye />}
-            </button>
+            <Input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
 
+          {/* Password */}
+          <PasswordField
+              value={password}
+              onChange={(e)=>setPassword(e.target.value)}
+              showPassword={showPassword}
+              setShowPassword={setShowPassword}
+          />
+
           {/* Password Strength Checklist */}
-          <div className="bg-zinc-900/40 p-3 rounded-xl border border-zinc-800 text-xs space-y-1.5">
-            <p className="text-zinc-400 font-semibold">Password Requirements:</p>
-            <ul className="space-y-1">
-              <li className={`flex items-center gap-2 transition-colors duration-205 ${isLengthMet ? "text-green-400 font-medium" : "text-zinc-500"}`}>
-                <span className={`w-1.5 h-1.5 rounded-full ${isLengthMet ? "bg-green-450" : "bg-zinc-600"}`}></span>
-                At least 8 characters
-              </li>
-              <li className={`flex items-center gap-2 transition-colors duration-205 ${isNumberMet ? "text-green-400 font-medium" : "text-zinc-500"}`}>
-                <span className={`w-1.5 h-1.5 rounded-full ${isNumberMet ? "bg-green-450" : "bg-zinc-600"}`}></span>
-                At least one number
-              </li>
-              <li className={`flex items-center gap-2 transition-colors duration-205 ${isSpecialMet ? "text-green-400 font-medium" : "text-zinc-500"}`}>
-                <span className={`w-1.5 h-1.5 rounded-full ${isSpecialMet ? "bg-green-450" : "bg-zinc-600"}`}></span>
-                At least one special character
-              </li>
-            </ul>
+          <div className="flex gap-4 text-xs">
+            <div className="flex items-center gap-1">
+              <span
+                className={`h-2 w-2 rounded-full ${
+                  isLengthMet ? "bg-green-400" : "bg-zinc-600"
+                }`}
+              />
+              <span>8+ Chars</span>
+            </div>
+
+            <div className="flex items-center gap-1">
+              <span
+                className={`h-2 w-2 rounded-full ${
+                  isNumberMet ? "bg-green-400" : "bg-zinc-600"
+                }`}
+              />
+              <span>Number</span>
+            </div>
+
+            <div className="flex items-center gap-1">
+              <span
+                className={`h-2 w-2 rounded-full ${
+                  isSpecialMet ? "bg-green-400" : "bg-zinc-600"
+                }`}
+              />
+              <span>Special</span>
+            </div>
           </div>
 
           {/* Confirm Password */}
-          <div className="relative">
-            <input
-              type={showConfirmPassword ? "text" : "password"}
+          <PasswordField
               placeholder="Confirm Password"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full bg-zinc-900/60 border border-zinc-700 rounded-xl px-4 py-3 pr-12 text-white outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/50 transition"
-              required
-            />
-
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white"
-            >
-              {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-            </button>
-          </div>
+              onChange={(e)=>setConfirmPassword(e.target.value)}
+              showPassword={showConfirmPassword}
+              setShowPassword={setShowConfirmPassword}
+          />
 
           {/* Error Message */}
-          {error && (
-            <div className="bg-red-500/10 border border-red-500 text-red-400 rounded-xl px-4 py-3 text-sm">
+          <Alert type="error">
               {error}
-            </div>
-          )}
-
+          </Alert>
           {/* Success Message */}
-          {message && (
-            <div className="bg-green-500/10 border border-green-500 text-green-400 rounded-xl px-4 py-3 text-sm">
+          <Alert type="success">
               {message}
-            </div>
-          )}
+          </Alert>
 
           {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-red-600 py-3 rounded-xl font-semibold text-white hover:bg-red-700 hover:shadow-lg hover:shadow-red-500/20 transition-all duration-200 cursor-pointer disabled:opacity-50"
+          <Button
+              type="submit"
+              loading={loading}
+              fullWidth
           >
-            {loading ? "Registering..." : "Create Account"}
-          </button>
+            Create Account
+          </Button>
         </form>
 
         {/* Login Link */}
@@ -247,7 +220,7 @@ export default function Register() {
             Login
           </Link>
         </p>
-      </div>
+      </AuthCard>
     </div>
   );
 }
