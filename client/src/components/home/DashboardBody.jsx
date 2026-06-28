@@ -1,26 +1,30 @@
-import WelcomeCard from "./WelcomeCard";
-import FriendsPanel from "./FriendsPanel";
-import QuickActions from "./QuickActions";
-import RecentRooms from "./RecentRooms";
+import WelcomeBanner from "./DashBoardBody/WelcomeBanner";
+import CreateRoomCard from "./DashBoardBody/CreateRoomCard";
+import JoinRoomCard from "./DashBoardBody/JoinRoomCard";
+import FriendsPanel from "./DashBoardBody/FriendsPanel";
+import RecentRooms from "./DashBoardBody/RecentRooms";
 
 export default function DashboardBody() {
   return (
-    <main className="max-w-7xl mx-auto px-6 py-10">
+    <main className="min-h-screen bg-gradient-to-br from-[#0B0B0B] via-[#111827] to-[#0F172A] px-6 py-8">
+      <div className="max-w-7xl mx-auto">
+        <WelcomeBanner />
 
-      <div className="grid lg:grid-cols-3 gap-8">
+        <div className="mt-8 grid gap-8 lg:grid-cols-3">
+          {/* Left Side */}
+          <div className="space-y-8 lg:col-span-2">
+            <div className="grid gap-6 md:grid-cols-2">
+              <CreateRoomCard />
+              <JoinRoomCard />
+            </div>
 
-        {/* Left */}
-        <div className="lg:col-span-2 space-y-8">
-          <WelcomeCard />
-          <QuickActions />
-          <RecentRooms />
+            <RecentRooms />
+          </div>
+
+          {/* Right Side */}
+          <FriendsPanel />
         </div>
-
-        {/* Right */}
-        <FriendsPanel />
-
       </div>
-
     </main>
   );
 }
