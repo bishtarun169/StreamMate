@@ -16,9 +16,9 @@ function App() {
         <Route path="/register" element={<Register />} />
 
         {/* Home Layout */}
-        <Route path="/home" element={<Home />}>
-          <Route path="profile" element={<Profile />} />
-        </Route>
+        <Route path="/home" element={<Home />}></Route>
+        {/* profile */}
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </BrowserRouter>
   );
