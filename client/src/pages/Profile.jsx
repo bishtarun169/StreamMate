@@ -1,5 +1,5 @@
 
 export default function Profile(){
 
-    return <></>
+    return(<h1>this is profile </h1>)
 }
