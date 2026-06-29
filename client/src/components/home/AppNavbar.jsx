@@ -34,12 +34,18 @@ export default function DashboardHeader({
             Dashboard
           </NavLink>
 
-          <Link
+          <NavLink
             to="/profile"
-            className="px-5 py-2 rounded-lg font-medium text-gray-300 transition hover:text-white hover:bg-[#374151]"
+            className={({ isActive }) =>
+              `px-5 py-2 rounded-lg font-medium transition ${
+                isActive
+                  ? "bg-red-600 text-white"
+                  : "text-gray-300 hover:text-white hover:bg-[#374151]"
+              }`
+            }
           >
             Profile
-          </Link>
+          </NavLink>
         </nav>
 
         {/* Right Section */}
