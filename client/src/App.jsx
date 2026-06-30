@@ -5,7 +5,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
-
+import PreferenceSettings from "./pages/PreferenceSettings";
 function App() {
   return (
     <BrowserRouter>
@@ -19,6 +19,8 @@ function App() {
         <Route path="/home" element={<Home />}></Route>
         {/* profile */}
         <Route path="/profile" element={<Profile />} />
+       <Route path="/AccountSetting" element={ <PreferenceSettings/>}></Route>
+       
       </Routes>
     </BrowserRouter>
   );
