@@ -20,7 +20,7 @@ function App() {
         <Route path="/home" element={<Home />}></Route>
         {/* profile */}
         <Route path="/profile" element={<Profile />} />
-        <Route path="/AccountSetting" element={ <PreferenceSettings/>}></Route>
+        <Route path="/PreferenceSettings" element={ <PreferenceSettings/>}></Route>
         <Route path="/create-room" element={<CreateRoom />} />
       </Routes>
     </BrowserRouter>
