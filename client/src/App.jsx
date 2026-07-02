@@ -6,6 +6,7 @@ import Register from "./pages/Register";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import PreferenceSettings from "./pages/PreferenceSettings";
+import CreateRoom from "./pages/CreateRoom";
 function App() {
   return (
     <BrowserRouter>
@@ -19,8 +20,8 @@ function App() {
         <Route path="/home" element={<Home />}></Route>
         {/* profile */}
         <Route path="/profile" element={<Profile />} />
-       <Route path="/AccountSetting" element={ <PreferenceSettings/>}></Route>
-       
+        <Route path="/AccountSetting" element={ <PreferenceSettings/>}></Route>
+        <Route path="/create-room" element={<CreateRoom />} />
       </Routes>
     </BrowserRouter>
   );

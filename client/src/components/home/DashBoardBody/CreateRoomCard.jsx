@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { FaPlus } from "react-icons/fa";
 
 export default function CreateRoomCard() {
@@ -18,9 +19,13 @@ export default function CreateRoomCard() {
       </p>
 
       {/* Button */}
-      <button
+      <Link
+        to="/create-room"
         className="
           mt-auto
+          flex
+          items-center
+          justify-center
           w-full
           rounded-xl
           border
@@ -39,7 +44,8 @@ export default function CreateRoomCard() {
         "
       >
         Create Room
-      </button>
+      </Link>
     </div>
   );
 }
+
