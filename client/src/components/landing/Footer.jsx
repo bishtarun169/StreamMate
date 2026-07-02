@@ -1,12 +1,15 @@
 
 import { FaGithub } from "react-icons/fa";
+import useThemeInfo from "../../hooks/useThemeInfo";
 
-export default function Footer({ theme = "dark" }) {
-  const isLight = theme === "light";
+export default function Footer({ theme: propTheme }) {
+  const { theme: reduxTheme } = useThemeInfo();
+  const activeTheme = propTheme || reduxTheme || "dark";
+  const isLight = activeTheme === "light";
 
   const bgClass = isLight
-    ? "bg-zinc-100 text-zinc-800 border-t border-zinc-200"
-    : "bg-[#09090b] text-[#f4f4f5] border-t border-zinc-900";
+    ? "bg-zinc-100 text-zinc-800 border-t border-zinc-200 transition-colors duration-300"
+    : "bg-[#09090b] text-[#f4f4f5] border-t border-zinc-900 transition-colors duration-300";
 
   const headingClass = isLight ? "text-zinc-900" : "text-white";
 
@@ -21,6 +24,7 @@ export default function Footer({ theme = "dark" }) {
   const logoClass = isLight ? "text-zinc-900" : "text-white";
 
   return (
+
     <footer className={`${bgClass} w-full mt-auto`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex flex-col items-center text-center space-y-5">
