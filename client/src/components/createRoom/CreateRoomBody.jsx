@@ -1,10 +1,18 @@
 import CreateRoomHero from "./CreateRoomHero";
 import CreateRoomForm from "./CreateRoomForm";
 import RoomTipsCard from "./RoomTipsCard";
+import useThemeInfo from "../../hooks/useThemeInfo";
 
 export default function CreateRoomBody() {
+  const { theme } = useThemeInfo();
+  const isDark = theme === "dark";
+
+  const bgClass = isDark
+    ? "bg-gradient-to-br from-[#0B0B0B] via-[#111827] to-[#0F172A]"
+    : "bg-gradient-to-br from-slate-50 via-gray-100 to-slate-200";
+
   return (
-    <main className="min-h-screen bg-gradient-to-br from-[#0B0B0B] via-[#111827] to-[#0F172A] px-6 py-8">
+    <main className={`min-h-screen ${bgClass} px-6 py-8 transition-colors duration-300`}>
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Top Hero Banner */}
         <CreateRoomHero />
@@ -22,3 +30,4 @@ export default function CreateRoomBody() {
     </main>
   );
 }
+
