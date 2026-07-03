@@ -90,7 +90,7 @@ export default function DashboardHeader() {
                 >
                   {/* Profile */}
                   <Link
-                    to="/profile"
+                    to="/home/profile"
                     onClick={() => setShowMenu(false)}
                     className={`flex items-center gap-3 px-4 py-3 transition ${dropdownItem}`}
                   >

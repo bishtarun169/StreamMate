@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <>
       <DashboardHeader />
-      <DashboardBody />
+      <Outlet></Outlet>
       <Footer />
     </>
   );

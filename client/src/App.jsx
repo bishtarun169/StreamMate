@@ -7,6 +7,7 @@ import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import PreferenceSettings from "./pages/PreferenceSettings";
 import CreateRoom from "./pages/CreateRoom";
+import DashboardBody from "./components/home/DashboardBody";
 function App() {
   return (
     <BrowserRouter>
@@ -17,9 +18,12 @@ function App() {
         <Route path="/register" element={<Register />} />
 
         {/* Home Layout */}
-        <Route path="/home" element={<Home />}></Route>
-        {/* profile */}
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/home" element={<Home />}>
+            <Route index element={<DashboardBody />} />
+            <Route path="profile" element={<Profile />} />
+        </Route>
+       
+      
         <Route path="/PreferenceSettings" element={ <PreferenceSettings/>}></Route>
         <Route path="/create-room" element={<CreateRoom />} />
       </Routes>
