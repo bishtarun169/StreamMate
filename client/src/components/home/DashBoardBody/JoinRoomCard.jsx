@@ -1,5 +1,6 @@
 import { FaSignInAlt } from "react-icons/fa";
 import useThemeInfo from "../../../hooks/useThemeInfo";
+import { Link } from "react-router-dom";
 
 export default function JoinRoomCard() {
   const { theme } = useThemeInfo();
@@ -32,10 +33,13 @@ export default function JoinRoomCard() {
         synchronized watch room.
       </p>
 
-      {/* Button */}
-      <button
+      <Link
+        to="/home/join-room"
         className={`
           mt-auto
+          flex
+          items-center
+          justify-center
           w-full
           rounded-xl
           border
@@ -43,14 +47,14 @@ export default function JoinRoomCard() {
           py-4
           text-lg
           font-semibold
-          transition
+          transition-all
           duration-300
           active:scale-95
           ${btnClass}
         `}
       >
         Join Room
-      </button>
+      </Link>
     </div>
   );
 }

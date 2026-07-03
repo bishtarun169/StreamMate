@@ -35,7 +35,7 @@ export default function CreateRoomCard() {
 
       {/* Button */}
       <Link
-        to="/create-room"
+        to="/home/create-room"
         className={`
           mt-auto
           flex
