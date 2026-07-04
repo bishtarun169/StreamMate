@@ -9,6 +9,7 @@ import PreferenceSettings from "./pages/PreferenceSettings";
 import CreateRoom from "./pages/CreateRoom";
 import DashboardBody from "./components/home/DashboardBody";
 import JoinRoom from "./pages/JoinRoom";
+import WatchRoom from "./pages/WatchRoom";
 
 
 
@@ -27,6 +28,7 @@ function App() {
             <Route path="profile" element={<Profile />} />
             <Route path="create-room" element={<CreateRoom />}></Route>
             <Route path="join-room" element={<JoinRoom />}></Route>
+            <Route path="room/:roomCode" element={<WatchRoom />}></Route>
         </Route>
        
       

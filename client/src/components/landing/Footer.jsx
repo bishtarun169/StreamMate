@@ -1,13 +1,15 @@
 import { FaGithub } from "react-icons/fa";
 import useThemeInfo from "../../hooks/useThemeInfo";
 
-export default function Footer() {
+
+
+export default function Footer({ forceDark = false }) {
   const { theme: reduxTheme } = useThemeInfo();
-  const activeTheme = reduxTheme || "dark";
+  const activeTheme = forceDark ? "dark" : (reduxTheme || "dark");
   const isLight = activeTheme === "light";
 
   const bgClass = isLight
-    ? "bg-sky-50 text-gray-800 border-t border-sky-200 transition-colors duration-300"
+    ? "bg-slate-100 text-gray-800 border-t border-gray-200 transition-colors duration-300"
     : "bg-[#111827] text-gray-100 border-t border-gray-800 transition-colors duration-300";
 
   const headingClass = isLight ? "text-gray-900" : "text-white";
@@ -18,7 +20,7 @@ export default function Footer() {
     ? "text-gray-600 hover:text-red-600"
     : "text-gray-400 hover:text-white";
 
-  const logoClass = isLight ? "text-red-600" : "text-red-500";
+  const logo = isLight ? "/logo2black.png" : "/logo2white.png";
 
   return (
     <footer className={`${bgClass} w-full mt-auto`}>
@@ -26,20 +28,12 @@ export default function Footer() {
         <div className="flex flex-col items-center text-center space-y-6">
           {/* Logo + Project Name */}
           <div className="flex items-center gap-3">
-            <svg
-              className={`w-10 h-10 ${logoClass}`}
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M12 2 L22 7 v10 L12 22 L2 17 V7 Z" />
-              <path d="M12 12 V22" />
-              <path d="M12 12 L2 7" />
-              <path d="M12 12 L22 7" />
-            </svg>
+            
+            <img
+              src={logo}
+              alt="StreamMate Logo"
+              className="w-16 h-16 object-contain"
+            />
 
             <h2 className={`text-3xl font-bold ${headingClass}`}>
               <span className="text-red-600">Stream</span>Mate
@@ -61,7 +55,7 @@ export default function Footer() {
             aria-label="GitHub Repository"
             className={`flex items-center justify-center w-11 h-11 rounded-full transition-all duration-200 hover:scale-105 ${
               isLight
-                ? "bg-white border border-sky-200 shadow-sm hover:bg-sky-100"
+                ? "bg-white border border-gray-300 shadow-sm hover:bg-gray-50"
                 : "bg-[#1F2937] hover:bg-[#374151]"
             }`}
           >
@@ -72,7 +66,7 @@ export default function Footer() {
           <div
             className={`w-full max-w-xl ${
               isLight
-                ? "border-t border-sky-200"
+                ? "border-t border-gray-200"
                 : "border-t border-gray-700"
             }`}
           />

@@ -4,20 +4,18 @@ export default function FeatureCard({
   description,
 }) {
   return (
-    <div className="bg-[#18181b]/30 border border-zinc-800/60 p-6 sm:p-8 rounded-3xl space-y-4 hover:border-zinc-700 transition duration-200">
-
-      <div className="w-12 h-12 bg-red-500/10 text-red-500 border border-red-500/20 rounded-2xl flex items-center justify-center shadow-md">
-        <Icon size={18} />
+    <div className="group flex h-full flex-col rounded-3xl border p-7 transition-all duration-300 hover:-translate-y-1 border-gray-800 bg-[#111111] hover:border-red-600/50 hover:shadow-[0_0_35px_rgba(220,38,38,0.12)]">
+      <div className="flex h-14 w-14 items-center justify-center rounded-2xl border transition-colors duration-300 border-red-800 bg-red-950/40">
+        <Icon className="text-lg text-red-500" />
       </div>
 
-      <h3 className="text-xl font-bold text-white">
+      <h3 className="mt-6 text-2xl font-bold transition-colors duration-300 text-white">
         {title}
       </h3>
 
-      <p className="text-sm text-zinc-400 leading-relaxed">
+      <p className="mt-3 flex-1 text-base leading-relaxed transition-colors duration-300 text-gray-400">
         {description}
       </p>
-
     </div>
   );
 }

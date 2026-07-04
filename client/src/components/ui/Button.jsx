@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import useThemeInfo from "../../hooks/useThemeInfo";
 
 export default function Button({
   children,
@@ -8,19 +9,23 @@ export default function Button({
   disabled = false,
   fullWidth = false,
   type = "button",
-  className = ""
+  className = "",
+  forceDark = false,
 }) {
+  const { theme } = useThemeInfo();
+  const isDark = forceDark || theme === "dark";
+
   const baseClasses = `
     inline-flex
     items-center
     justify-center
     gap-2
-    rounded-lg
+    rounded-xl
     px-6
-    py-3
+    py-3.5
     font-semibold
     transition-all
-    duration-200
+    duration-300
     active:scale-95
     disabled:opacity-50
     disabled:cursor-not-allowed
@@ -28,10 +33,11 @@ export default function Button({
 
   const variants = {
     primary:
-      "bg-red-600 text-white hover:bg-red-700 hover:shadow-lg hover:shadow-red-500/20",
+      "bg-red-600 text-white hover:bg-red-700 hover:shadow-lg hover:shadow-red-500/25",
 
-    secondary:
-      "border border-zinc-700 text-zinc-300 hover:border-zinc-500 hover:bg-zinc-900",
+    secondary: isDark
+      ? "border border-gray-700 bg-transparent text-white hover:border-red-600 hover:bg-red-600 hover:text-white hover:shadow-lg hover:shadow-red-500/20"
+      : "border border-gray-300 bg-white text-gray-800 hover:border-red-600 hover:bg-red-600 hover:text-white shadow-sm hover:shadow-lg hover:shadow-red-500/20",
   };
 
   const classes = `

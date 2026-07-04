@@ -29,8 +29,8 @@ export default function DashboardHeader() {
   const isDark = theme === "dark";
 
   const headerBg = isDark
-    ? "bg-[#111827] border-gray-800"
-    : "bg-white border-gray-200";
+    ? "bg-[#111827]/80 backdrop-blur-xl border-gray-800 shadow-[0_4px_30px_rgba(0,0,0,0.4)]"
+    : "bg-white/80 backdrop-blur-xl border-gray-200 shadow-sm";
 
   const iconBtn = isDark
     ? "bg-[#1F2937] hover:bg-[#374151]"
@@ -49,7 +49,7 @@ export default function DashboardHeader() {
   return (
     <>
       <header
-        className={`sticky top-0 z-50 border-b transition-all duration-300 ${headerBg}`}
+        className={`fixed top-0 left-0 right-0 w-full z-50 border-b transition-all duration-300 ${headerBg}`}
       >
         <div className="max-w-7xl mx-auto h-16 px-6 flex items-center justify-between">
           {/* Logo */}
