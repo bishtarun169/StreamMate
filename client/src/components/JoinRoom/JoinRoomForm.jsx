@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   FiUser,
   FiHash,
@@ -8,6 +9,7 @@ import {
 import useThemeInfo from "../../hooks/useThemeInfo";
 
 export default function JoinRoomForm() {
+  const navigate = useNavigate();
   const { theme } = useThemeInfo();
   const isDark = theme === "dark";
 
@@ -26,11 +28,8 @@ export default function JoinRoomForm() {
 
   function handleSubmit(e) {
     e.preventDefault();
-
-    console.log(formData);
-
-    // TODO:
-    // Join Room API
+    const code = formData.roomCode.trim() || "U13966";
+    navigate(`/home/room/${code}`);
   }
 
   const cardClass = isDark

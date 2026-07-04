@@ -110,19 +110,29 @@ export default function CreateRoomForm() {
         </div>
 
         {/* Actions */}
-        <div className="mt-8 flex flex-col sm:flex-row gap-4 w-full max-w-sm">
+        <div className="mt-8 flex flex-col gap-3 w-full max-w-sm">
           <Link
-            to="/home"
-            className={`flex-1 rounded-xl border py-3.5 font-semibold transition active:scale-95 ${backBtnClass}`}
+            to={`/home/room/${createdRoom.roomCode}`}
+            className="w-full flex items-center justify-center gap-2 rounded-2xl bg-red-600 py-4 text-sm font-extrabold text-white transition hover:bg-red-500 hover:scale-[1.02] active:scale-95 shadow-[0_0_25px_rgba(220,38,38,0.4)]"
           >
-            Back to Dashboard
+            <FaPlay />
+            <span>Enter Watch Room Now</span>
           </Link>
-          <button
-            onClick={resetForm}
-            className="flex-1 rounded-xl bg-red-700 py-3.5 font-semibold text-white transition hover:bg-red-600 active:scale-95 shadow-sm"
-          >
-            Create Another
-          </button>
+
+          <div className="flex gap-3 w-full">
+            <Link
+              to="/home"
+              className={`flex-1 rounded-xl border py-3 text-xs font-semibold transition active:scale-95 flex items-center justify-center ${backBtnClass}`}
+            >
+              Dashboard
+            </Link>
+            <button
+              onClick={resetForm}
+              className="flex-1 rounded-xl bg-gray-800/80 border border-gray-700 py-3 text-xs font-semibold text-gray-300 transition hover:bg-gray-700 hover:text-white active:scale-95"
+            >
+              Create Another
+            </button>
+          </div>
         </div>
       </div>
     );
