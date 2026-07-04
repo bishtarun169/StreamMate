@@ -8,6 +8,7 @@ const moderationHandler = require("./moderationHandler");
 // listen for new socket connection
 function initializeSocket(io) {
     io.on("connection", (socket) => {
+        console.log("⚡ New Socket Client Connected:", socket.id);
 
         // Register all event handlers
         presenceHandler(io, socket);

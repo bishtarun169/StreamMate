@@ -39,18 +39,29 @@ function roomHandler (io, socket) {
           // Broadcast user joined info to the room
           try {
                if (userId) {
-                    const userObj = await User.findById(userId).select("name email userId profilePic");
-                    if (userObj) {
-                         socket.to(roomId).emit("participant-joined", {
-                              user: userObj,
-                              role: role || "member",
-                              isMuted: false,
-                              joinedAt: new Date()
-                         });
-                    }
+                    const isObjectId = /^[0-9a-fA-F]{24}$/.test(userId);
+                    const userObj = await User.findOne({
+                         $or: [
+                              { _id: isObjectId ? userId : null },
+                              { userId: userId }
+                         ]
+                    }).select("name email userId profilePic");
+
+                    const participantData = userObj || {
+                         name: "User (" + String(userId).slice(-4) + ")",
+                         userId: userId,
+                         profilePic: "https://ui-avatars.com/api/?name=User&background=dc2626&color=fff"
+                    };
+
+                    socket.to(roomId).emit("participant-joined", {
+                         user: participantData,
+                         role: role || "member",
+                         isMuted: false,
+                         joinedAt: new Date()
+                    });
                }
           } catch (error) {
-               console.error("Error in join-room socket broadcast:", error);
+               console.error("Error in join-room socket broadcast:", error.message);
           }
      });
 

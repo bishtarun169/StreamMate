@@ -49,13 +49,13 @@ function mediaHandler (io, socket) {
                if (now - lastTime >= 60000) {
                     lastIncrementMap.set(socket.id, now);
                     try {
-                         await User.findByIdAndUpdate(socket.userId, {
-                              $inc: {
-                                   totalWatchMinutes: 1,
-                              },
-                         });
+                         const isObjectId = /^[0-9a-fA-F]{24}$/.test(socket.userId);
+                         await User.findOneAndUpdate(
+                              { $or: [{ _id: isObjectId ? socket.userId : null }, { userId: socket.userId }] },
+                              { $inc: { totalWatchMinutes: 1 } }
+                         );
                     } catch (error) {
-                         console.error("Watch minute increment error:", error);
+                         console.error("Watch minute increment error:", error.message);
                     }
                }
           }
