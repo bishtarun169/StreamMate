@@ -1,9 +1,18 @@
+import { useState, useEffect } from "react";
 import { FaCrown } from "react-icons/fa";
 import useThemeInfo from "../../../hooks/useThemeInfo";
+import { fetchProfile } from "../../../services/homeService";
 
-export default function WelcomeBanner({ user = { firstName: "Nishant" } }) {
+export default function WelcomeBanner({ user: propUser }) {
   const { theme } = useThemeInfo();
   const isDark = theme === "dark";
+  const [userName, setUserName] = useState(propUser?.firstName || propUser?.name || "Friend");
+
+  useEffect(() => {
+    if (!propUser?.firstName && !propUser?.name) {
+      fetchProfile().then((res) => setUserName((res.user?.name || res.name || "Friend").split(" ")[0])).catch(() => {});
+    }
+  }, [propUser]);
 
   const containerBg = isDark
     ? "border-red-900/20 bg-gradient-to-r from-[#1b1113] via-[#151515] to-[#101010]"
@@ -36,7 +45,7 @@ export default function WelcomeBanner({ user = { firstName: "Nishant" } }) {
 
       {/* Heading */}
       <h2 className={`mt-5 text-5xl font-bold leading-tight transition-colors duration-300 ${headingClass}`}>
-        Welcome back, <span className="text-red-600">{user.firstName}</span>!
+        Welcome back, <span className="text-red-600">{userName}</span>!
       </h2>
 
       {/* Subtitle */}

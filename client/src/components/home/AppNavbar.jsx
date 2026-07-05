@@ -4,14 +4,22 @@ import { IoNotificationsOutline } from "react-icons/io5";
 import { FiUser, FiSettings, FiLogOut } from "react-icons/fi";
 import PreferenceSettings from "../../pages/PreferenceSettings";
 import useThemeInfo from "../../hooks/useThemeInfo";
+import { fetchProfile } from "../../services/homeService";
 
 export default function DashboardHeader() {
-  const profileImage ="https://ui-avatars.com/api/?name=User&background=dc2626&color=fff";
+  const [profileImage, setProfileImage] = useState("https://ui-avatars.com/api/?name=User&background=dc2626&color=fff");
 
   const { theme } = useThemeInfo();
   const [showMenu, setShowMenu] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const menuRef = useRef(null);
+
+  useEffect(() => {
+    fetchProfile().then((res) => {
+      const u = res.user || res;
+      if (u) setProfileImage(u.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name || "User")}&background=dc2626&color=fff`);
+    }).catch(() => {});
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(e) {
