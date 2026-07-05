@@ -12,10 +12,12 @@ export default function LiveChat({ currentUser, isHost }) {
 
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const chatEndRef = useRef(null);
+  const chatContainerRef = useRef(null);
 
   const scrollToBottom = () => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
   };
 
   useEffect(() => {
@@ -107,7 +109,7 @@ export default function LiveChat({ currentUser, isHost }) {
     : "bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-400 focus:border-red-600 focus:bg-white";
 
   return (
-    <div className={`flex flex-col h-[500px] lg:h-full rounded-3xl border transition-colors duration-300 ${bgClass}`}>
+    <div className={`flex flex-col h-[470px] rounded-3xl border transition-colors duration-300 ${bgClass}`}>
       {/* Header */}
       <div className={`p-4 border-b flex items-center justify-between ${isDark ? "border-gray-800" : "border-gray-200"}`}>
         <div className="flex items-center gap-2">
@@ -120,7 +122,7 @@ export default function LiveChat({ currentUser, isHost }) {
       </div>
 
       {/* Message List */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3">
+      <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 space-y-3">
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center p-6 text-gray-500">
             <FaComments className="text-3xl mb-2 opacity-40 text-red-500" />
@@ -150,7 +152,6 @@ export default function LiveChat({ currentUser, isHost }) {
             );
           })
         )}
-        <div ref={chatEndRef} />
       </div>
 
       {/* Input Form */}

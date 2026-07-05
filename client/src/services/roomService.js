@@ -153,7 +153,8 @@ export const fetchCurrentUserProfile = async () => {
     const errorData = await response.json();
     throw new Error(errorData.message || "Failed to fetch user");
   }
-  return response.json();
+  const data = await response.json();
+  return data.user || data;
 };
 
 export const createRoomApi = async (roomData) => {
