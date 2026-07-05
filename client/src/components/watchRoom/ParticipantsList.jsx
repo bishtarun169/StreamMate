@@ -14,7 +14,7 @@ export default function ParticipantsList({ participants = [] }) {
     : "bg-gray-50 border-gray-200";
 
   return (
-    <div className={`flex flex-col rounded-3xl border p-5 transition-colors duration-300 ${bgClass}`}>
+    <div className={`flex flex-col h-[470px] rounded-3xl border p-5 transition-colors duration-300 ${bgClass}`}>
       <div className="flex items-center justify-between border-b pb-3.5 mb-4 border-gray-800/80">
         <div className="flex items-center gap-2">
           <FaUsers className="text-red-500" />
@@ -23,7 +23,7 @@ export default function ParticipantsList({ participants = [] }) {
         <span className="text-xs font-bold text-gray-400">{participants.length} Online</span>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-3 overflow-y-auto flex-1 pr-1">
         {participants.map((user) => (
           <div key={user.id} className={`flex items-center justify-between p-3 rounded-2xl border transition ${itemBg}`}>
             <div className="flex items-center gap-3">

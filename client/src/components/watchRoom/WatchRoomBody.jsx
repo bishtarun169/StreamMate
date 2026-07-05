@@ -84,12 +84,20 @@ export default function WatchRoomBody() {
 
         // Connect Socket with real ID and role
         const socketUserId = userRes?._id || "guest_" + Math.floor(Math.random() * 10000);
-        const isUserHost = userRes?._id && hostObj?._id ? userRes._id === hostObj._id : true;
+        const isUserHost = Boolean(userRes?._id && hostObj?._id && String(userRes._id) === String(hostObj._id));
         const role = isUserHost ? "host" : "member";
+        const myName = userRes?.name || (isUserHost ? (hostObj?.name || "Host") : "Guest (" + socketUserId.toString().slice(-4) + ")");
+        const myAvatar = userRes?.profilePic || (isUserHost ? hostObj?.profilePic : `https://ui-avatars.com/api/?name=${encodeURIComponent(myName)}&background=2563eb&color=fff`);
 
         const handleConnect = () => {
           console.log("🟢 Frontend connected to Socket Server with ID:", socket.id);
-          socket.emit("join-room", { roomId, userId: socketUserId, role });
+          socket.emit("join-room", { 
+            roomId, 
+            userId: socketUserId, 
+            role,
+            name: myName,
+            avatar: myAvatar
+          });
         };
 
         if (socket.connected) {
@@ -107,17 +115,24 @@ export default function WatchRoomBody() {
 
     loadRoomAndConnect();
 
+    // Listen for authoritative synchronized participant list from server
+    const handleRoomParticipantsUpdate = ({ count, participants: liveList }) => {
+      console.log("👥 Live room participants synced:", count, liveList);
+      if (Array.isArray(liveList) && liveList.length > 0) {
+        setParticipants(liveList);
+      }
+    };
+
     const handleParticipantJoined = ({ user, role }) => {
-      console.log("👤 New participant joined:", user?.name || user);
       if (!user) return;
       setParticipants((prev) => {
-        if (prev.some((p) => p.id === user._id || p.userId === user.userId || p.name.includes(user.name))) return prev;
+        if (prev.some((p) => p.id === user._id || p.userId === (user.userId || user._id))) return prev;
         const newP = {
-          id: user._id || Math.random(),
+          id: user._id || user.userId || Math.random(),
           name: user.name + (role === "host" ? " (Host)" : ""),
           role: role === "host" ? "Host" : "Viewer",
           status: "Synced",
-          avatar: user.profilePic || `https://ui-avatars.com/api/?name=${user.name || 'User'}&background=2563eb&color=fff`,
+          avatar: user.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=2563eb&color=fff`,
           userId: user.userId || user._id
         };
         return [...prev, newP];
@@ -128,12 +143,14 @@ export default function WatchRoomBody() {
       setParticipants((prev) => prev.filter((p) => p.id !== userId && p.userId !== userId));
     };
 
+    socket.on("room-participants-update", handleRoomParticipantsUpdate);
     socket.on("participant-joined", handleParticipantJoined);
     socket.on("participant-left", handleParticipantLeft);
 
     return () => {
       isMounted = false;
       socket.off("connect");
+      socket.off("room-participants-update", handleRoomParticipantsUpdate);
       socket.off("participant-joined", handleParticipantJoined);
       socket.off("participant-left", handleParticipantLeft);
       socket.emit("room:leave", { roomId: roomCode || "U13966" });
@@ -153,7 +170,7 @@ export default function WatchRoomBody() {
     }
   `;
 
-  const isHost = currentUser?._id && roomData?.host?._id ? currentUser._id === roomData.host._id : true;
+  const isHost = Boolean(currentUser?._id && roomData?.host?._id && String(currentUser._id) === String(roomData.host._id));
 
   if (loading) {
     return (
@@ -174,9 +191,9 @@ export default function WatchRoomBody() {
         />
 
         {/* Main Grid: Player + Sidebar */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
           {/* Left 2 Cols: Video Player */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 flex flex-col min-h-0">
             <VideoPlayer
               isHost={isHost}
               videoURL={roomData?.videoURL}
@@ -185,7 +202,7 @@ export default function WatchRoomBody() {
           </div>
 
           {/* Right 1 Col: Chat / Participants Tabs */}
-          <div className="lg:col-span-1 flex flex-col gap-4">
+          <div className="lg:col-span-1 flex flex-col gap-4 h-full min-h-0">
             {/* Tab Switcher */}
             <div className={`flex gap-2 p-1.5 rounded-3xl border ${isDark ? "bg-[#111111] border-gray-800" : "bg-white border-gray-200 shadow-sm"}`}>
               <button onClick={() => setActiveTab("chat")} className={tabBtn("chat")}>
@@ -199,7 +216,7 @@ export default function WatchRoomBody() {
             </div>
 
             {/* Tab Content */}
-            <div className="transition-all duration-300">
+            <div className="transition-all duration-300 flex-1 flex flex-col min-h-0">
               {activeTab === "chat" ? <LiveChat currentUser={currentUser} isHost={isHost} /> : <ParticipantsList participants={participants} />}
             </div>
           </div>
