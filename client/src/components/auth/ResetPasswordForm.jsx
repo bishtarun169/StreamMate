@@ -5,19 +5,27 @@ import Alert from "../ui/Alert";
 
 export default function ResetPasswordForm({
   email,
+
   otp,
   setOtp,
+
   newPassword,
   setNewPassword,
+
   confirmPassword,
   setConfirmPassword,
+
   showPassword,
   setShowPassword,
+
   showConfirmPassword,
   setShowConfirmPassword,
+
   loading,
+
   error,
   message,
+
   onSubmit,
 }) {
   return (
@@ -30,12 +38,12 @@ export default function ResetPasswordForm({
       />
 
       <Input
-        placeholder="Enter OTP"
+        placeholder="6-digit Reset Code"
         value={otp}
         onChange={(e) => setOtp(e.target.value)}
         maxLength={6}
         required
-        className="text-center font-serif"
+        className="text-center tracking-[0.35em] font-mono"
       />
 
       <PasswordField
@@ -54,9 +62,17 @@ export default function ResetPasswordForm({
         setShowPassword={setShowConfirmPassword}
       />
 
-      {error && <Alert type="error">{error}</Alert>}
+      {error && (
+        <Alert type="error">
+          {error}
+        </Alert>
+      )}
 
-      {message && <Alert type="success">{message}</Alert>}
+      {message && (
+        <Alert type="success">
+          {message}
+        </Alert>
+      )}
 
       <Button
         type="submit"

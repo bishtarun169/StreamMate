@@ -4,7 +4,9 @@ const Room = require('../models/Room');
 const roomExists = async (req, res, next) => {
     try {
         const roomId = req.params.roomID || req.params.id; 
-        const room = await Room.findById(roomId);
+        const isObjectId = /^[0-9a-fA-F]{24}$/.test(roomId);
+        const query = isObjectId ? { $or: [{ _id: roomId }, { roomCode: roomId }] } : { roomCode: roomId };
+        const room = await Room.findOne(query);
 
         if (!room) {
             return res.status(404).json({

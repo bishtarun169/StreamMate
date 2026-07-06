@@ -1,10 +1,10 @@
 import React from "react";
 
-export default function Toast({ toast }) {
+export  function Toast({ toast }) {
   if (!toast || !toast.message) return null;
 
   return (
-    <div className="fixed bottom-5 right-5 z-[100] animate-fadeIn">
+    <div className="fixed bottom-5 right-5 z-100 animate-fadeIn">
       <div className={`backdrop-blur-md px-6 py-4 rounded-2xl border flex items-center gap-3 shadow-2xl max-w-sm ${
         toast.type === "success"
           ? "bg-green-500/10 border-green-500/30 text-green-400"
