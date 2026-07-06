@@ -1,9 +1,41 @@
+import { useState, useEffect } from "react";
 import { FaUserPlus } from "react-icons/fa";
 import useThemeInfo from "../../../hooks/useThemeInfo";
+import { addFriend, fetchFriends } from "../../../services/homeService";
 
-export default function FriendsPanel({ friends = [], onlineCount = 0 }) {
+export default function FriendsPanel({ onlineCount = 0 }) {
   const { theme } = useThemeInfo();
   const isDark = theme === "dark";
+  const [friendsList, setFriendsList] = useState([]);
+  const [friendInput, setFriendInput] = useState("");
+  const [status, setStatus] = useState({ loading: false, error: "", success: "" });
+
+  const loadFriends = async () => {
+    try {
+      const res = await fetchFriends();
+      setFriendsList(res.friends || []);
+    } catch (e) {
+      console.error("Failed to load friends", e);
+    }
+  };
+
+  useEffect(() => {
+    loadFriends();
+  }, []);
+
+  const handleAddFriend = async (e) => {
+    e.preventDefault();
+    if (!friendInput.trim()) return;
+    setStatus({ loading: true, error: "", success: "" });
+    try {
+      await addFriend(friendInput.trim());
+      setStatus({ loading: false, error: "", success: "Friend added successfully!" });
+      setFriendInput("");
+      loadFriends();
+    } catch (err) {
+      setStatus({ loading: false, error: err.message || "Failed to add friend", success: "" });
+    }
+  };
 
   const asideBg = isDark
     ? "border-gray-800 bg-[#111111]"
@@ -48,14 +80,16 @@ export default function FriendsPanel({ friends = [], onlineCount = 0 }) {
       </div>
 
       {/* Add Friend */}
-      <div className="mt-8">
+      <form onSubmit={handleAddFriend} className="mt-8">
         <label className={`mb-2 block text-sm font-medium transition-colors duration-300 ${labelClass}`}>
           Add Friend
         </label>
 
         <input
-          type="email"
-          placeholder="Enter email address"
+          type="text"
+          value={friendInput}
+          onChange={(e) => setFriendInput(e.target.value)}
+          placeholder="Enter User ID or email"
           className={`
             w-full
             rounded-xl
@@ -68,7 +102,12 @@ export default function FriendsPanel({ friends = [], onlineCount = 0 }) {
           `}
         />
 
+        {status.error && <p className="mt-2 text-xs text-red-500">{status.error}</p>}
+        {status.success && <p className="mt-2 text-xs text-green-500">{status.success}</p>}
+
         <button
+          type="submit"
+          disabled={status.loading}
           className="
             mt-4
             flex
@@ -84,18 +123,19 @@ export default function FriendsPanel({ friends = [], onlineCount = 0 }) {
             transition
             hover:bg-red-600
             active:scale-95
+            disabled:opacity-50
           "
         >
           <FaUserPlus />
-          Add Friend
+          {status.loading ? "Adding..." : "Add Friend"}
         </button>
-      </div>
+      </form>
 
       {/* Divider */}
       <div className={`my-8 h-px transition-colors duration-300 ${dividerClass}`} />
 
       {/* Friends */}
-      {friends.length === 0 ? (
+      {friendsList.length === 0 ? (
         <div className="flex flex-col items-center py-10 text-center">
           <div className={`flex h-16 w-16 items-center justify-center rounded-full transition-colors duration-300 ${emptyCircleBg}`}>
             <FaUserPlus className="text-2xl text-gray-500" />
@@ -111,14 +151,14 @@ export default function FriendsPanel({ friends = [], onlineCount = 0 }) {
         </div>
       ) : (
         <div className="space-y-4">
-          {friends.map((friend) => (
+          {friendsList.map((friend) => (
             <div
-              key={friend.id}
+              key={friend._id || friend.id}
               className={`flex items-center justify-between rounded-xl p-3 transition-colors duration-300 ${friendItemClass}`}
             >
               <div className="flex items-center gap-3">
                 <img
-                  src={friend.avatar}
+                  src={friend.profilePic || friend.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(friend.name || "User")}&background=dc2626&color=fff`}
                   alt={friend.name}
                   className="h-11 w-11 rounded-full object-cover"
                 />
@@ -126,7 +166,7 @@ export default function FriendsPanel({ friends = [], onlineCount = 0 }) {
                 <div>
                   <p className={`font-semibold transition-colors duration-300 ${titleClass}`}>{friend.name}</p>
 
-                  <p className={`text-sm transition-colors duration-300 ${subClass}`}>{friend.email}</p>
+                  <p className={`text-sm transition-colors duration-300 ${subClass}`}>{friend.email || friend.userId}</p>
                 </div>
               </div>
 

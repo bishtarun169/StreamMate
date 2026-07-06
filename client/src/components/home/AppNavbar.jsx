@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { IoNotificationsOutline } from "react-icons/io5";
 import { FiUser, FiSettings, FiLogOut } from "react-icons/fi";
 import PreferenceSettings from "../../pages/PreferenceSettings";
@@ -7,6 +7,7 @@ import useThemeInfo from "../../hooks/useThemeInfo";
 import { fetchProfile } from "../../services/homeService";
 
 export default function DashboardHeader() {
+  const navigate = useNavigate();
   const [profileImage, setProfileImage] = useState("https://ui-avatars.com/api/?name=User&background=dc2626&color=fff");
 
   const { theme } = useThemeInfo();
@@ -126,6 +127,10 @@ export default function DashboardHeader() {
 
                   {/* Logout */}
                   <button
+                    onClick={() => {
+                      localStorage.clear();
+                      navigate("/login");
+                    }}
                     className={`w-full flex items-center gap-3 px-4 py-3 text-red-500 transition ${
                       isDark
                         ? "hover:bg-[#374151]"

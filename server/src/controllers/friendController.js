@@ -15,8 +15,9 @@ const addFriend = async (req, res) => {
                return res.status(404).json({ message: 'Current user not found' });
           }
 
-          // Find the friend by userId
-          const friendUser = await User.findOne({ userId: friendUserId.trim().toLowerCase() });
+          // Find the friend by userId or email
+          const queryStr = friendUserId.trim().toLowerCase();
+          const friendUser = await User.findOne({ $or: [{ userId: queryStr }, { email: queryStr }] });
           if (!friendUser) {
                return res.status(404).json({ message: 'User not found' });
           }

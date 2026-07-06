@@ -30,6 +30,17 @@ export const fetchRecentRooms = async () => {
   return response.json();
 };
 
+export const fetchFriends = async () => {
+  const response = await fetch(`${API_BASE}/api/friends/list`, {
+    headers: getHeaders(),
+  });
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Failed to fetch friends");
+  }
+  return response.json();
+};
+
 export const addFriend = async (friendUserId) => {
   const response = await fetch(`${API_BASE}/api/friends/add`, {
     method: "POST",
