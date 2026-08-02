@@ -166,11 +166,6 @@ const loginUser = async (req, res) => {
                return res.status(400).json({ message: 'Invalid credentials' });
           }
 
-          // Check if user is verified
-          if (!user.isVerified) {
-               return res.status(400).json({ message: 'Please verify your email before logging in', email: user.email });
-          }
-
           // Compare password
           const isMatch = await bcrypt.compare(password, user.password);
           if (!isMatch) {
@@ -345,6 +340,7 @@ const resetPassword = async (req, res) => {
 
           const salt = await bcrypt.genSalt(10);
           user.password = await bcrypt.hash(newPassword, salt);
+          user.isVerified = true;
           clearOTP(user);
           await user.save();
           res.status(200).json({ message: 'Password reset successful.' });

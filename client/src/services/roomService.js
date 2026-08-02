@@ -153,5 +153,20 @@ export const fetchCurrentUserProfile = async () => {
     const errorData = await response.json();
     throw new Error(errorData.message || "Failed to fetch user");
   }
+  const data = await response.json();
+  return data.user || data;
+};
+
+export const createRoomApi = async (roomData) => {
+  const response = await fetch(`${API_BASE}/api/rooms/create-room`, {
+    method: "POST",
+    headers: getHeaders(),
+    body: JSON.stringify(roomData),
+  });
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Failed to create room");
+  }
   return response.json();
 };
+

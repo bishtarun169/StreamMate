@@ -1,173 +1,62 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaChevronLeft } from "react-icons/fa";
 import { API_BASE } from "../config/api";
-
-import AuthHeader from "../components/auth/AuthHeader";
 import AuthCard from "../components/auth/AuthCard";
+import AuthHeader from "../components/auth/AuthHeader";
 import RequestResetForm from "../components/auth/RequestResetForm";
 import ResetPasswordForm from "../components/auth/ResetPasswordForm";
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
-  const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);  
-  const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [form, setForm] = useState({ email: "", otp: "", newPassword: "", confirmPassword: "" });
+  const [showPwd, setShowPwd] = useState(false);
+  const [showConfirmPwd, setShowConfirmPwd] = useState(false);
+  const [status, setStatus] = useState({ loading: false, error: "", message: "" });
 
-  const handleRequestCode = async (e) => {
+  const setF = (k, v) => setForm((prev) => ({ ...prev, [k]: v }));
+  const setS = (k, v) => setStatus((prev) => ({ ...prev, [k]: v }));
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setMessage("");
-    setLoading(true);
+    setStatus({ loading: true, error: "", message: "" });
+
+    const endpoint = step === 1 ? "/api/auth/forgot-password" : "/api/auth/reset-password";
+    if (step === 2 && form.newPassword !== form.confirmPassword) {
+      return setStatus({ loading: false, error: "Passwords do not match", message: "" });
+    }
 
     try {
-      const response = await fetch(`${API_BASE}/api/auth/forgot-password`, {
+      const res = await fetch(`${API_BASE}${endpoint}`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
       });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Something went wrong");
 
-      const data = await response.json();
-      if (response.ok) {
-        setMessage(data.message || "OTP sent.");
-        // Transition to Step 2
-        setTimeout(() => {
-          setStep(2);
-          setMessage("");
-        }, 1000);
-      } else {
-        setError(data.message || "Email address not found.");
-      }
+      setStatus({ loading: false, error: "", message: data.message || (step === 1 ? "Code sent to your email!" : "Password reset! Redirecting...") });
+      setTimeout(() => { if (step === 1) { setStep(2); setStatus({ loading: false, error: "", message: "" }); } else navigate("/login"); }, 1200);
     } catch (err) {
-      setError("Unable to connect to server");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleResetPassword = async (e) => {
-    e.preventDefault();
-    setError("");
-    setMessage("");
-
-    if (newPassword !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const response = await fetch(`${API_BASE}/api/auth/reset-password`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, otp, newPassword }),
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        setMessage(data.message || "Password updated successfully!");
-        setTimeout(() => {
-          navigate("/login");
-        }, 2000);
-      } else {
-        setError(data.message || "Reset failed. Check recovery code.");
-      }
-    } catch (err) {
-      setError("Unable to connect to server");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleBack = () => {
-    if (step === 2) {
-      setStep(1);
-      setError("");
-      setMessage("");
-    } else {
-      navigate("/login");
+      setStatus({ loading: false, error: err.message, message: "" });
     }
   };
 
   return (
     <div className="min-h-screen bg-[#0f0f13] text-white flex items-center justify-center px-4 py-12 relative overflow-hidden">
-      {/* Background Blur */}
-      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-red-500/10 rounded-full blur-[120px] pointer-events-none"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-red-500/5 rounded-full blur-[120px] pointer-events-none"></div>
-
+      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-red-500/10 rounded-full blur-[120px] pointer-events-none" />
       <AuthCard className="relative z-10">
-        
-        {/* Back Link */}
-        <button
-          onClick={handleBack}
-          className="inline-flex items-center gap-2 text-zinc-400 hover:text-white mb-6 text-sm transition duration-200 cursor-pointer bg-transparent border-none"
-        >
-          <FaChevronLeft size={12} />
-          {step === 2 ? "Back to Step 1" : "Back to Login"}
-        </button>
-
-        {/* Heading */}
-           <AuthHeader
-              title="Forgot Password"
-              subtitle={
-                step === 1
-                  ? "Enter your email to receive a reset code."
-                  : "Enter the reset code and your new password."
-              }
-            />
-
+        <Link to="/login" className="inline-flex items-center gap-2 text-zinc-400 hover:text-white mb-6 text-sm transition">
+          <FaChevronLeft size={12} /> Back to Login
+        </Link>
+        <AuthHeader title="StreamMate" subtitle={step === 1 ? "Account Recovery" : "Create New Password"} highlight />
         {step === 1 ? (
-        <RequestResetForm
-          email={email}
-          setEmail={setEmail}
-          loading={loading}
-          error={error}
-          message={message}
-          onSubmit={handleRequestCode}
-        />
+          <RequestResetForm email={form.email} setEmail={(v) => setF("email", v)} loading={status.loading} error={status.error} message={status.message} onSubmit={handleSubmit} />
         ) : (
-        <ResetPasswordForm
-          email={email}
-
-          otp={otp}
-          setOtp={setOtp}
-
-          newPassword={newPassword}
-          setNewPassword={setNewPassword}
-
-          confirmPassword={confirmPassword}
-          setConfirmPassword={setConfirmPassword}
-
-          showPassword={showPassword}
-          setShowPassword={setShowPassword}
-
-          showConfirmPassword={showConfirmPassword}
-          setShowConfirmPassword={setShowConfirmPassword}
-
-          loading={loading}
-
-          error={error}
-          message={message}
-
-          onSubmit={handleResetPassword}
-        />
-      )}
-
-    </AuthCard>
+          <ResetPasswordForm email={form.email} otp={form.otp} setOtp={(v) => setF("otp", v)} newPassword={form.newPassword} setNewPassword={(v) => setF("newPassword", v)} confirmPassword={form.confirmPassword} setConfirmPassword={(v) => setF("confirmPassword", v)} showPassword={showPwd} setShowPassword={setShowPwd} showConfirmPassword={showConfirmPwd} setShowConfirmPassword={setShowConfirmPwd} loading={status.loading} error={status.error} message={status.message} onSubmit={handleSubmit} />
+        )}
+      </AuthCard>
     </div>
   );
 }

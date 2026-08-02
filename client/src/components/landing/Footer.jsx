@@ -1,54 +1,47 @@
-
 import { FaGithub } from "react-icons/fa";
+import useThemeInfo from "../../hooks/useThemeInfo";
 
-export default function Footer({ theme = "dark" }) {
-  const isLight = theme === "light";
+
+
+export default function Footer({ forceDark = false }) {
+  const { theme: reduxTheme } = useThemeInfo();
+  const activeTheme = forceDark ? "dark" : (reduxTheme || "dark");
+  const isLight = activeTheme === "light";
 
   const bgClass = isLight
-    ? "bg-zinc-100 text-zinc-800 border-t border-zinc-200"
-    : "bg-[#09090b] text-[#f4f4f5] border-t border-zinc-900";
+    ? "bg-slate-100 text-gray-800 border-t border-gray-200 transition-colors duration-300"
+    : "bg-[#111827] text-gray-100 border-t border-gray-800 transition-colors duration-300";
 
-  const headingClass = isLight ? "text-zinc-900" : "text-white";
+  const headingClass = isLight ? "text-gray-900" : "text-white";
 
-  const textMutedClass = isLight
-    ? "text-zinc-500"
-    : "text-zinc-400";
+  const textMutedClass = isLight ? "text-gray-600" : "text-gray-400";
 
   const linkClass = isLight
-    ? "text-zinc-500 hover:text-zinc-900"
-    : "text-zinc-400 hover:text-white";
+    ? "text-gray-600 hover:text-red-600"
+    : "text-gray-400 hover:text-white";
 
-  const logoClass = isLight ? "text-zinc-900" : "text-white";
+  const logo = isLight ? "/logo2black.png" : "/logo2white.png";
 
   return (
     <footer className={`${bgClass} w-full mt-auto`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="flex flex-col items-center text-center space-y-5">
-          
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-8 py-14">
+        <div className="flex flex-col items-center text-center space-y-6">
           {/* Logo + Project Name */}
           <div className="flex items-center gap-3">
-            <svg
-              className={`w-9 h-9 ${logoClass}`}
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M12 2 L22 7 v10 L12 22 L2 17 V7 Z" />
-              <path d="M12 12 V22" />
-              <path d="M12 12 L2 7" />
-              <path d="M12 12 L22 7" />
-            </svg>
+            
+            <img
+              src={logo}
+              alt="StreamMate Logo"
+              className="w-16 h-16 object-contain"
+            />
 
-            <h2 className={`text-2xl font-bold ${headingClass}`}>
-              StreamMate
+            <h2 className={`text-3xl font-bold ${headingClass}`}>
+              <span className="text-red-600">Stream</span>Mate
             </h2>
           </div>
 
           {/* Description */}
-          <p className={`max-w-xl text-sm leading-6 ${textMutedClass}`}>
+          <p className={`max-w-2xl text-sm leading-7 ${textMutedClass}`}>
             StreamMate lets you watch videos together with friends in
             synchronized rooms, chat in real-time, and enjoy a seamless
             watch-party experience from anywhere.
@@ -59,14 +52,27 @@ export default function Footer({ theme = "dark" }) {
             href="https://github.com/bishtarun169/StreamMate"
             target="_blank"
             rel="noopener noreferrer"
-            className={`${linkClass} transition duration-150`}
             aria-label="GitHub Repository"
+            className={`flex items-center justify-center w-11 h-11 rounded-full transition-all duration-200 hover:scale-105 ${
+              isLight
+                ? "bg-white border border-gray-300 shadow-sm hover:bg-gray-50"
+                : "bg-[#1F2937] hover:bg-[#374151]"
+            }`}
           >
-            <FaGithub size={22} />
+            <FaGithub size={22} className={linkClass} />
           </a>
 
+          {/* Divider */}
+          <div
+            className={`w-full max-w-xl ${
+              isLight
+                ? "border-t border-gray-200"
+                : "border-t border-gray-700"
+            }`}
+          />
+
           {/* Copyright */}
-          <p className={`text-xs pt-2 ${textMutedClass}`}>
+          <p className={`text-sm ${textMutedClass}`}>
             © 2026 StreamMate • Built by students
           </p>
         </div>
@@ -74,4 +80,3 @@ export default function Footer({ theme = "dark" }) {
     </footer>
   );
 }
-

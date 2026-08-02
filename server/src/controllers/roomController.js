@@ -284,7 +284,7 @@ const getRoomByCode = async (req, res) => {
           const room = await Room.findOne({
                roomCode: req.params.roomCode,
                isActive: true
-          }).populate('host', '_id name');
+          }).populate('host', '_id name email profilePic').populate('participants.user', 'name email userId profilePic');
 
           if (!room) {
                return res.status(404).json({
