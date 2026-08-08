@@ -22,15 +22,19 @@ export default function VerifyEmail() {
 
   // Retrieve email if passed from Registration page state redirect
   useEffect(() => {
+    let nextEmail = email;
     if (location.state && location.state.email) {
-      setEmail(location.state.email);
+      nextEmail = location.state.email;
     } else {
       const savedEmail = localStorage.getItem("verify_email");
       if (savedEmail) {
-        setEmail(savedEmail);
+        nextEmail = savedEmail;
       }
     }
-  }, [location]);
+    if (nextEmail !== email) {
+      setEmail(nextEmail);
+    }
+  }, [location.state, email]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
