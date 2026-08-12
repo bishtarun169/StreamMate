@@ -6,9 +6,11 @@ import Register from "./pages/Register";
 import CreateRoom from "./pages/CreateRoom";
 import JoinRoom from "./pages/JoinRoom";
 import Home from "./pages/Home";
-import VerifyEmail from "./pages/VerifyEmail";
 import ForgotPassword from "./pages/ForgotPassword";
 import Room from "./pages/Room";
+import WatchRoom from "./pages/WatchRoom";
+import  VerifyEmail from "./pages/VerifyEmail";
+
 
 
 function App() {
@@ -23,7 +25,19 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/room/:roomId" element={<Room />} />
+
+        {/* Home Layout */}
+        <Route path="/home" element={<Home />}>
+            <Route index element={<DashboardBody />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="create-room" element={<CreateRoom />}></Route>
+            <Route path="join-room" element={<JoinRoom />}></Route>
+            <Route path="room/:roomCode" element={<WatchRoom />}></Route>
+        </Route>
+        <Route path="/verify-email" element={<VerifyEmail />} />
+
+        <Route path="/PreferenceSettings" element={ <PreferenceSettings/>}></Route>
+
       </Routes>
     </BrowserRouter>
   );

@@ -2,6 +2,7 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+const OTP = require("../models/OTP");
 
 const sendOTPEmail = require('../utils/sendEmail');
 const validatePasswordStrength = require('../utils/passwordStrength');
@@ -74,10 +75,10 @@ const registerUser = async (req, res) => {
           await otpService.sendOTP(
                user,
                OTP_Templates.VERIFY_EMAIL
-          );   
+          );
           await user.save();
 
-          res.status(201).json({ 
+          res.status(201).json({
                message: 'User registered. Verify OTP to complete registration.',
           });
      } catch (error) {
@@ -87,23 +88,35 @@ const registerUser = async (req, res) => {
 };
 
 // OTP verification controller
+/* Note: Don't confuse: OTP is model, Otp is document */
 const verifyOTP = async (req, res) => {
      try {
           const { email, otp } = req.body;
           // Find user by email
-          const user = await User.findOne({ email });
+          const user = await User.findOne({ email: email.toLowerCase().trim() });
           if (!user) {
                return res.status(400).json({ message: 'User not found' });
           }
-          verifyOtpCode(user, otp);
-          // Mark user as verified and clear OTP fields
+
+          // Finding latest unused otp for this user
+          const Otp = await OTP.findOne({
+            user: user._id,
+            used: false
+          }).sort({createdAt : -1});
+
+          await verifyOtpCode(Otp, otp);
+
+          // Otp has been used
+          Otp.used = true;
+          await Otp.save();
+
+           // Mark user as verified
           user.isVerified = true;
-          clearOTP(user);
           await user.save();
+
           res.status(200).json({ message: 'OTP verified successfully. Registration complete.' });
      } catch (error) {
-          console.error("ERROR in verifyOTP:", error);
-          res.status(500).json({ message: 'Server error' });
+          res.status(400).json({ message: error.message });
      }
 };
 
@@ -140,7 +153,7 @@ const resendOTP = async (req, res) => {
                message: 'Server error'
           });
      }
-};  
+};
 
 // User login controller
 const loginUser = async (req, res) => {
@@ -160,8 +173,8 @@ const loginUser = async (req, res) => {
                query = { userId: trimmedIdentifier.toLowerCase() };
           }
 
-          // Check if user exists
-          const user = await User.findOne(query);
+          // Check if user exists and also Mongo DB does not include password when selection is false
+          const user = await User.findOne(query).select("+password");
           if (!user) {
                return res.status(400).json({ message: 'Invalid credentials' });
           }
@@ -181,7 +194,7 @@ const loginUser = async (req, res) => {
           const payload = { userId: user._id };
           const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
 
-          res.status(200).json({ 
+          res.status(200).json({
                message: 'Login successful',
                token,
                user: {
@@ -193,12 +206,12 @@ const loginUser = async (req, res) => {
                     settings: user.settings
                }
           });
-          
+
      } catch (error) {
           console.error("ERROR in loginUser:", error);
           res.status(500).json({ message: 'Server error' });
      }
-};   
+};
 
 // Get current user info controller (protected route)
 const getCurrentUser = async (req, res) => {
@@ -368,13 +381,13 @@ const requestPasswordOTP = async (req, res) => {
      }
 };
 
-module.exports = { 
-     registerUser, 
-     loginUser, 
-     getCurrentUser, 
-     updateUser, 
-     deleteUser, 
-     verifyOTP, 
+module.exports = {
+     registerUser,
+     loginUser,
+     getCurrentUser,
+     updateUser,
+     deleteUser,
+     verifyOTP,
      resendOTP,
      forgotPassword,
      resetPassword,

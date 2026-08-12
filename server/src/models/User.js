@@ -5,12 +5,15 @@ const userSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
+    trim: true,
   },
 
   email: {
     type: String,
     required: true,
     unique: true,
+    trim: true,
+    lowercase: true,
   },
 
   userId: {
@@ -24,33 +27,34 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
+    select: false
   },
-
+  /* Improvement : Having a separate Profile schema is much better (Not account identity )*/
   profilePic: {
     type: String,
-    default: "",
+    default: null,
   },
 
   gender: {
     type: String,
-    default: "",
+    default: null,
   },
 
   bio: {
     type: String,
-    default: "",
+    default: null,
   },
 
   location: {
     type: String,
-    default: "",
+    default: null,
   },
 
   birthday: {
-    type: String,
-    default: "",
+    type: Date,
+    default: null,
   },
-  
+
   settings: {
     theme: {
       type: String,
@@ -66,14 +70,7 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  otp: {
-    type: String,
-    default: null,
-  },
-  otpExpiry: {
-    type: Date,
-    default: null,
-  },
+
   roomsCreated: {
     type: Number,
     default: 0,
@@ -86,10 +83,16 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+
   friends: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   }],
+
+  /*
+    Warning: Unbounded array of notifications
+    Better to use separate notification shchema
+  */
   notifications: [{
     id: { type: String, required: true },
     sender: { type: String, required: true },

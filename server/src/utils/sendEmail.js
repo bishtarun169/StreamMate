@@ -7,10 +7,9 @@ const transporter = nodeMailer.createTransport({
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS
     }
-});  
+});
 
 const sendEmail = async (to, otp, options = {}) => {
-    console.log("sendEmail called");
     const {
         title = "Email Verification",
         description = "verify your email address"
@@ -22,13 +21,10 @@ const sendEmail = async (to, otp, options = {}) => {
         subject: `${title} - StreamMate`,
         text: `
         Hello,
-
         Your One-time Password (OTP) for ${title.toLowerCase()} is:
-
         ${otp}
 
-        This OTP is valid fro 10 minutes.
-
+        This OTP is valid for 10 minutes.
         If You did not request this, please ignore this email.
 
         Regards,
@@ -38,7 +34,7 @@ const sendEmail = async (to, otp, options = {}) => {
 
     try {
         await transporter.sendMail(mailOptions);
-        console.log(`OTP email sent to ${to}`);
+        // console.log(`OTP email sent to ${to}`);
     } catch (error) {
         console.error(`Error sending OTP email to ${to}:`, error.message);
     }
